@@ -2,7 +2,7 @@ context("fetch_records")
 
 test_that("fetch_records works as expected", {
 
-  skip_if(conn_test$token == "")
+  # skip_if(conn_test$token == "")
 
   ## specify subsets to fetch
   form_focal <- "followup"
