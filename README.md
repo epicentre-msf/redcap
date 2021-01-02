@@ -8,6 +8,8 @@
 [![Lifecycle:
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
 [![R-CMD-check](https://github.com/epicentre-msf/redcap/workflows/R-CMD-check/badge.svg)](https://github.com/epicentre-msf/redcap/actions)
+[![Codecov test
+coverage](https://codecov.io/gh/epicentre-msf/redcap/branch/main/graph/badge.svg)](https://codecov.io/gh/epicentre-msf/redcap?branch=main)
 <!-- badges: end -->
 
 An R package for interacting with
