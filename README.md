@@ -7,6 +7,7 @@
 
 [![Lifecycle:
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
+[![R-CMD-check](https://github.com/epicentre-msf/redcap/workflows/R-CMD-check/badge.svg)](https://github.com/epicentre-msf/redcap/actions)
 <!-- badges: end -->
 
 An R package for interacting with
