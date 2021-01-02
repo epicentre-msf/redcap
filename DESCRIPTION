@@ -1,0 +1,29 @@
+Package: redcap
+Title: R Utilities For REDCap
+Version: 0.1.0
+Authors@R: c(
+    person(
+      "Patrick", "Barks",
+      email = "patrick.barks@epicentre.msf.org",
+      role = c("aut", "cre")
+    )
+  )
+Description: R utilities for interacting with the REDCap API.
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.1
+Depends: 
+    R (>= 2.10)
+Imports:
+    httr,
+    dplyr,
+    tidyr,
+    purrr,
+    rlang,
+    readr,
+    lubridate
+Suggests: 
+    testthat,
+    covr
