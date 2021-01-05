@@ -1,6 +1,6 @@
 test_that("fetch_database works as expected", {
 
-  skip_if(is.null(conn_test$token))
+  skip_if(conn_test$token == "")
 
 
   ## specify subsets to fetch
@@ -53,6 +53,6 @@ test_that("fetch_database works as expected", {
 test_that("fetch_database fails gracefully", {
 
   expect_error(fetch_database(conn_fake))
-  skip_if(is.null(conn_test$token))
+  skip_if(conn_test$token == "")
   expect_error(fetch_database(conn_test, forms = "blah_blah"))
 })
