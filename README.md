@@ -40,6 +40,9 @@ Nutter.
     can be run using the `query_vec()` function in
     [queryr](https://github.com/epicentre-msf/queryr).
 
+*Note this package has only been tested with REDCap versions 10.0 -
+10.5*
+
 ### Installation
 
 Install from GitHub with:
@@ -59,6 +62,10 @@ conn <- rconn(
   url = "https://www.research.epicentre.msf.org/api/",
   token = Sys.getenv("REDCAP_PKG") # this project just used for testing
 )
+
+### fetch REDCap version number
+redcap_version(conn)
+#> [1] "10.0.29"
 
 ### fetch metadata tables
 df_dictionary <- meta_dictionary(conn)
