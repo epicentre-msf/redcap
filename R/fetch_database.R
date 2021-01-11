@@ -67,6 +67,7 @@ fetch_database <- function(conn,
   ## fetch metadata (dictionary, instruments, repeat instr, event mapping) -----
   m_dict <- meta_dictionary(conn)
   m_instr <- meta_forms(conn)
+  m_events <- meta_events(conn, on_error = "null")
   m_repeat <- suppressWarnings(meta_repeating(conn, on_error = "null"))
   m_mapping <- meta_mapping(conn, on_error = "null")
 
@@ -97,6 +98,7 @@ fetch_database <- function(conn,
     double_sep = double_sep,
     m_dict = m_dict,
     m_instr = m_instr,
+    m_events = m_events,
     m_repeat = m_repeat,
     m_mapping = m_mapping
   )

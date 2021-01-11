@@ -1,4 +1,17 @@
 
+#' Wrapper to dplyr::recode
+#'
+#' @noRd
+#'
+#' @importFrom stats setNames
+#' @importFrom dplyr recode
+#' @importFrom rlang `!!!`
+recode_vec <- function(x, from, to) {
+  vec_recode <- stats::setNames(to, from)
+  dplyr::recode(x, !!!vec_recode)
+}
+
+
 #' Enclose a string in a special character (e.g. brackets, backticks), if not
 #' already enclosed
 #'
