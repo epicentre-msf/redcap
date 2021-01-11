@@ -45,6 +45,8 @@
 #'   levels can either be raw values (e.g. "0"/"1") or labels (e.g. "No"/"Yes")
 #'   depending on arguments `value_labs` and `checkbox_labs`. Defaults to
 #'   `FALSE`.
+#' @param na Character vector of strings to interpret as missing values. Passed
+#'   to [readr::read_csv]. Defaults to `c("", "NA")`.
 #' @param dag Logical indicating whether to export the
 #'   `redcap_data_access_group` field (if used in the project). Defaults to
 #'   `TRUE`.
@@ -112,6 +114,7 @@ fetch_records <- function(conn,
                           header_labs = FALSE,
                           checkbox_labs = FALSE,
                           use_factors = FALSE,
+                          na = c("", "NA"),
                           dag = TRUE,
                           double_resolve = FALSE,
                           double_sep = "--") {
@@ -139,6 +142,7 @@ fetch_records <- function(conn,
     header_labs = header_labs,
     checkbox_labs = checkbox_labs,
     use_factors = use_factors,
+    na = na,
     dag = dag,
     double_resolve = double_resolve,
     double_sep = double_sep,
@@ -165,6 +169,7 @@ fetch_records_ <- function(conn,
                            header_labs,
                            checkbox_labs,
                            use_factors,
+                           na,
                            dag,
                            double_resolve,
                            double_sep,
@@ -219,6 +224,7 @@ fetch_records_ <- function(conn,
     conn,
     body = body,
     content = NULL,
+    na = na,
     on_error = "fail"
   )
 

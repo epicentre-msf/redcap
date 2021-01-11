@@ -95,7 +95,11 @@ test_valid <- function(arg, options) {
 #' @noRd
 #' @importFrom httr POST content
 #' @importFrom readr cols col_character
-post_wrapper <- function(conn, body = NULL, content = NULL, on_error = "fail") {
+post_wrapper <- function(conn,
+                         body = NULL,
+                         content = NULL,
+                         na = c("", "NA"),
+                         on_error = "fail") {
 
   if (!is_rconn(conn)) {
     stop("Argument conn must be a REDCap connection created with rconn()")
@@ -128,7 +132,8 @@ post_wrapper <- function(conn, body = NULL, content = NULL, on_error = "fail") {
   } else {
     out <- httr::content(
       response,
-      col_types = readr::cols(.default = readr::col_character())
+      col_types = readr::cols(.default = readr::col_character()),
+      na = na
     )
   }
 

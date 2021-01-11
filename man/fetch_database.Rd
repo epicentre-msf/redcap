@@ -16,6 +16,7 @@ fetch_database(
   header_labs = FALSE,
   checkbox_labs = FALSE,
   use_factors = FALSE,
+  na = c("", "NA"),
   dag = TRUE,
   double_resolve = FALSE,
   double_sep = "--",
@@ -69,6 +70,9 @@ always be exported as raw values (usually "0"/"1").}
 levels can either be raw values (e.g. "0"/"1") or labels (e.g. "No"/"Yes")
 depending on arguments \code{value_labs} and \code{checkbox_labs}. Defaults to
 \code{FALSE}.}
+
+\item{na}{Character vector of strings to interpret as missing values. Passed
+to \link[readr:read_delim]{readr::read_csv}. Defaults to \code{c("", "NA")}.}
 
 \item{dag}{Logical indicating whether to export the
 \code{redcap_data_access_group} field (if used in the project). Defaults to
