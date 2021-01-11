@@ -23,7 +23,8 @@ Imports:
     purrr,
     rlang,
     readr,
-    lubridate
+    lubridate,
+    chron
 Suggests: 
     testthat,
     covr
