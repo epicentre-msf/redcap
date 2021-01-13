@@ -229,40 +229,43 @@ fetch_records_ <- function(conn,
   )
 
   ## filter to selected redcap_repeat_instance ---------------------------------
-  col_repeat <- ifelse(header_labs, "Repeat Instrument", "redcap_repeat_instrument")
-  col_event <- ifelse(header_labs, "Event Name", "redcap_event_name")
 
   # prepare df identifying expected repeat instruments for given events
-  m_repeat_join <- unique(m_repeat[m_repeat$form_name %in% forms,])
-  m_repeat_join$keep_repeat_instr <- TRUE
+  if (!is.null(m_repeat)) {
 
-  if (nrow(m_repeat_join) > 0 & all(c(col_repeat, col_event) %in% names(out))) {
-    if (value_labs) {
-      m_repeat_join[[col_repeat]] <- recode_vec(
-        m_repeat_join$form_name,
-        m_instr$instrument_name,
-        m_instr$instrument_label
-      )
-      m_repeat_join[[col_event]] <- recode_vec(
-        m_repeat_join$event_name,
-        m_events$unique_event_name,
-        m_events$event_name
-      )
-    } else {
-      m_repeat_join[[col_repeat]] <- m_repeat_join$form_name
-      m_repeat_join[[col_event]] <- m_repeat_join$event_name
+    col_repeat <- ifelse(header_labs, "Repeat Instrument", "redcap_repeat_instrument")
+    col_event <- ifelse(header_labs, "Event Name", "redcap_event_name")
+
+    m_repeat_join <- unique(m_repeat[m_repeat$form_name %in% forms,])
+    m_repeat_join$keep_repeat_instr <- TRUE
+
+    if (nrow(m_repeat_join) > 0 & all(c(col_repeat, col_event) %in% names(out))) {
+      if (value_labs) {
+        m_repeat_join[[col_repeat]] <- recode_vec(
+          m_repeat_join$form_name,
+          m_instr$instrument_name,
+          m_instr$instrument_label
+        )
+        m_repeat_join[[col_event]] <- recode_vec(
+          m_repeat_join$event_name,
+          m_events$unique_event_name,
+          m_events$event_name
+        )
+      } else {
+        m_repeat_join[[col_repeat]] <- m_repeat_join$form_name
+        m_repeat_join[[col_event]] <- m_repeat_join$event_name
+      }
+
+      m_repeat_join <- m_repeat_join[,c(col_repeat, col_event, "keep_repeat_instr")]
+
+      # join expected event/instrument combinations to form
+      out <- dplyr::left_join(out, m_repeat_join, by = c(col_repeat, col_event))
+
+      # filter form to expected even/instrument combinations
+      rows_keep <- !is.na(out$keep_repeat_instr) | !out[[col_event]] %in% m_repeat_join[[col_event]]
+      out <- out[rows_keep, !names(out) %in% "keep_repeat_instr", drop = FALSE]
     }
-
-    m_repeat_join <- m_repeat_join[,c(col_repeat, col_event, "keep_repeat_instr")]
-
-    # join expected event/instrument combinations to form
-    out <- dplyr::left_join(out, m_repeat_join, by = c(col_repeat, col_event))
-
-    # filter form to expected even/instrument combinations
-    rows_keep <- !is.na(out$keep_repeat_instr) | !out[[col_event]] %in% m_repeat_join[[col_event]]
-    out <- out[rows_keep, !names(out) %in% "keep_repeat_instr", drop = FALSE]
   }
-
 
   ## filter out rows with all fields missing -----------------------------------
   if (rm_empty) {
