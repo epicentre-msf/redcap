@@ -49,10 +49,7 @@
 #' meta_dictionary(conn)
 #' }
 #'
-#' @importFrom dplyr `%>%` arrange mutate filter select rename bind_rows
-#' @importFrom rlang .data
-#' @importFrom tidyr unnest
-#' @importFrom purrr map map_chr
+#' @importFrom dplyr rename
 #' @export meta_dictionary
 meta_dictionary <- function(conn,
                             forms = NULL,
@@ -91,28 +88,7 @@ meta_dictionary <- function(conn,
 
     ## expand checkbox
     if (expand_checkbox) {
-
-      out$rowid <- seq_len(nrow(out))
-
-      out_check <- out %>%
-        dplyr::filter(.data$field_type %in% "checkbox") %>%
-        dplyr::mutate(choices = purrr::map(.data$choices, split_choices)) %>%
-        tidyr::unnest("choices") %>%
-        dplyr::mutate(
-          field_name_orig = .data$field_name,
-          field_label_orig = .data$field_label,
-          checkbox_value = purrr::map_chr(.data$choices, ~ strsplit(.x, ", *")[[1]][1]),
-          checkbox_label = purrr::map_chr(.data$choices, ~ strsplit(.x, ", *")[[1]][2]),
-          field_name = paste(.data$field_name, .data$checkbox_value, sep = "___"),
-          field_label = paste0(.data$field_label, " (choice=", .data$checkbox_label, ")"),
-          choices = "0, Unchecked | 1, Checked"
-        )
-
-      out <- out %>%
-        dplyr::filter(!.data$field_type %in% "checkbox") %>%
-        dplyr::bind_rows(out_check) %>%
-        dplyr::arrange(.data$rowid) %>%
-        dplyr::select(-c("rowid", "checkbox_value", "checkbox_label"))
+      out <- expand_checkbox(out)
     }
 
     ## omit columns
@@ -120,5 +96,36 @@ meta_dictionary <- function(conn,
   }
 
   out
+}
+
+
+#' @noRd
+#' @importFrom dplyr `%>%` arrange mutate filter select bind_rows
+#' @importFrom rlang .data
+#' @importFrom tidyr unnest
+#' @importFrom purrr map map_chr
+expand_checkbox <- function(x) {
+
+  x$rowid <- seq_len(nrow(x))
+
+  x_check <- x %>%
+    dplyr::filter(.data$field_type %in% "checkbox") %>%
+    dplyr::mutate(choices = purrr::map(.data$choices, split_choices)) %>%
+    tidyr::unnest("choices") %>%
+    dplyr::mutate(
+      field_name_orig = .data$field_name,
+      field_label_orig = .data$field_label,
+      checkbox_value = purrr::map_chr(.data$choices, ~ strsplit(.x, ", *")[[1]][1]),
+      checkbox_label = purrr::map_chr(.data$choices, ~ strsplit(.x, ", *")[[1]][2]),
+      field_name = paste(.data$field_name, .data$checkbox_value, sep = "___"),
+      field_label = paste0(.data$field_label, " (choice=", .data$checkbox_label, ")"),
+      choices = "0, Unchecked | 1, Checked"
+    )
+
+  x %>%
+    dplyr::filter(!.data$field_type %in% "checkbox") %>%
+    dplyr::bind_rows(x_check) %>%
+    dplyr::arrange(.data$rowid) %>%
+    dplyr::select(-c("rowid", "checkbox_value", "checkbox_label"))
 }
 
