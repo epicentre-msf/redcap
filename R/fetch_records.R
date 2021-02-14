@@ -161,7 +161,6 @@ fetch_records <- function(conn,
 }
 
 
-
 #' @noRd
 #' @importFrom dplyr left_join
 fetch_records_ <- function(conn,
@@ -268,8 +267,29 @@ fetch_records_ <- function(conn,
       # join expected event/instrument combinations to form
       out <- dplyr::left_join(out, m_repeat_join, by = c(col_repeat, col_event))
 
-      # filter form to expected even/instrument combinations
+      # filter form to expected event/instrument combinations
       rows_keep <- !is.na(out$keep_repeat_instr) | !out[[col_event]] %in% m_repeat_join[[col_event]]
+      out <- out[rows_keep, !names(out) %in% "keep_repeat_instr", drop = FALSE]
+
+    } else if (nrow(m_repeat_join) > 0 & is.null(m_events) & c(col_repeat) %in% names(out)) {
+
+      if (value_labs) {
+        m_repeat_join[[col_repeat]] <- recode_vec(
+          m_repeat_join$form_name,
+          m_instr$instrument_name,
+          m_instr$instrument_label
+        )
+      } else {
+        m_repeat_join[[col_repeat]] <- m_repeat_join$form_name
+      }
+
+      m_repeat_join <- m_repeat_join[,c(col_repeat, "keep_repeat_instr")]
+
+      # join expected instruments to form
+      out <- dplyr::left_join(out, m_repeat_join, by = col_repeat)
+
+      # filter form to expected instruments
+      rows_keep <- !is.na(out$keep_repeat_instr)
       out <- out[rows_keep, !names(out) %in% "keep_repeat_instr", drop = FALSE]
     }
   }
