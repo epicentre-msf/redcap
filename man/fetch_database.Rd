@@ -10,6 +10,7 @@ fetch_database(
   forms = NULL,
   names_fn = function(x) x,
   records = NULL,
+  records_omit = NULL,
   id_field = TRUE,
   rm_empty = TRUE,
   value_labs = TRUE,
@@ -35,6 +36,11 @@ element names will correspond exactly to form names.}
 
 \item{records}{Character vector of record IDs to fetch. Set to \code{NULL} (the
 default) to fetch all record IDs corresponding to the selected form(s).}
+
+\item{records_omit}{Character vector of record IDs to ignore. Set to \code{NULL}
+(the default) to \emph{not} ignore any records. If a given record ID appears in
+both argument \code{records} and \code{records_omit}, argument \code{records_omit} takes
+precedence and that record will not be returned.}
 
 \item{id_field}{Logical indicating whether to always include the 'record ID'
 field (defined in REDCap to be the first variable in the project codebook)

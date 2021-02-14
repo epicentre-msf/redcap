@@ -9,6 +9,7 @@ fetch_records(
   forms = NULL,
   events = NULL,
   records = NULL,
+  records_omit = NULL,
   fields = NULL,
   id_field = TRUE,
   rm_empty = TRUE,
@@ -34,6 +35,11 @@ corresponding to the selected form(s).}
 
 \item{records}{Character vector of record IDs to fetch. Set to \code{NULL} (the
 default) to fetch all record IDs corresponding to the selected form(s).}
+
+\item{records_omit}{Character vector of record IDs to ignore. Set to \code{NULL}
+(the default) to \emph{not} ignore any records. If a given record ID appears in
+both argument \code{records} and \code{records_omit}, argument \code{records_omit} takes
+precedence and that record will not be returned.}
 
 \item{fields}{Character vector of fields (i.e. variables) to fetch. Set to
 \code{NULL} (the default) to fetch all fields corresponding to the selected

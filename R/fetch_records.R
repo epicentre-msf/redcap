@@ -13,6 +13,10 @@
 #'   corresponding to the selected form(s).
 #' @param records Character vector of record IDs to fetch. Set to `NULL` (the
 #'   default) to fetch all record IDs corresponding to the selected form(s).
+#' @param records_omit Character vector of record IDs to ignore. Set to `NULL`
+#'   (the default) to _not_ ignore any records. If a given record ID appears in
+#'   both argument `records` and `records_omit`, argument `records_omit` takes
+#'   precedence and that record will not be returned.
 #' @param fields Character vector of fields (i.e. variables) to fetch. Set to
 #'   `NULL` (the default) to fetch all fields corresponding to the selected
 #'   form(s).
@@ -107,6 +111,7 @@ fetch_records <- function(conn,
                           forms = NULL,
                           events = NULL,
                           records = NULL,
+                          records_omit = NULL,
                           fields = NULL,
                           id_field = TRUE,
                           rm_empty = TRUE,
@@ -135,6 +140,7 @@ fetch_records <- function(conn,
     forms = forms,
     events = events,
     records = records,
+    records_omit = records_omit,
     fields = fields,
     id_field = id_field,
     rm_empty = rm_empty,
@@ -162,6 +168,7 @@ fetch_records_ <- function(conn,
                            forms,
                            events,
                            records,
+                           records_omit,
                            fields,
                            id_field,
                            rm_empty,
@@ -265,6 +272,12 @@ fetch_records_ <- function(conn,
       rows_keep <- !is.na(out$keep_repeat_instr) | !out[[col_event]] %in% m_repeat_join[[col_event]]
       out <- out[rows_keep, !names(out) %in% "keep_repeat_instr", drop = FALSE]
     }
+  }
+
+  ## filter out records_omit ---------------------------------------------------
+  if (!is.null(records_omit)) {
+    rows_omit <- out[[name_id_field]] %in% records_omit
+    out <- out[!rows_omit, , drop = FALSE]
   }
 
   ## filter out rows with all fields missing -----------------------------------

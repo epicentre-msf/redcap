@@ -73,6 +73,27 @@ test_that("fetch_records works as expected", {
   expect_true(all(dict$field_label %in% names(x3)))
   check_var <- "Which serious adverse event occurred? (choice=Participant was hospitalized)"
   expect_true(all(x3[[check_var]] %in% c("Unchecked", "Checked")))
+
+
+  ## test argument records
+  records_focal <- c("0001", "0003")
+
+  x4 <- fetch_records(
+    conn = conn_test,
+    forms = form_focal,
+    records = records_focal
+  )
+
+  expect_setequal(x4$record_id, records_focal)
+
+  ## test argument records_omit
+  x5 <- fetch_records(
+    conn = conn_test,
+    forms = form_focal,
+    records_omit = records_focal
+  )
+
+  expect_true(!any(records_focal %in% x5$record_id))
 })
 
 
