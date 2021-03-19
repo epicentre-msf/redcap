@@ -1,4 +1,42 @@
 
+#' Create an empty tibble based on a set of column names. All columns of class
+#' character.
+#'
+#' @noRd
+#' @importFrom stats setNames
+#' @importFrom dplyr as_tibble
+empty_tibble <- function(x) {
+  out <- dplyr::as_tibble(
+    as.list(
+      stats::setNames(
+        rep(NA_character_, length(x)),
+        x
+      )
+    )
+  )
+  out[0, , drop = FALSE]
+}
+
+
+#' Convert numeric to character with exactly 1 decimal place
+#'
+#' @noRd
+format_1dp <- function(x) {
+  x <- sprintf("%.1f", x)
+  x[x %in% "NA"] <- NA_character_
+  x
+}
+
+
+#' Convert numeric to character with exactly 2 decimal places
+#'
+#' @noRd
+format_2dp <- function(x) {
+  x <- sprintf("%.2f", x)
+  x[x %in% "NA"] <- NA_character_
+  x
+}
+
 
 #' Convert REDCap time variables to chron 'times' class
 #'
@@ -130,10 +168,12 @@ post_wrapper <- function(conn,
       out <- NULL
     }
   } else {
-    out <- httr::content(
-      response,
-      col_types = readr::cols(.default = readr::col_character()),
-      na = na
+    suppressWarnings(
+      out <- httr::content(
+        response,
+        col_types = readr::cols(.default = readr::col_character()),
+        na = na
+      )
     )
   }
 

@@ -23,9 +23,11 @@ import_records <- function(conn,
                            overwrite = "normal",
                            return = "count") {
 
+
   ## fetch metadata (dictionary, factors) --------------------------------------
   m_dict <- meta_dictionary(conn)
   m_fact <- meta_factors(conn)
+  m_forms <- meta_forms(conn)
 
 
   ## argument validation -------------------------------------------------------
@@ -36,7 +38,9 @@ import_records <- function(conn,
   fields_meta <- c(
     "redcap_event_name",
     "redcap_repeat_instrument",
-    "redcap_repeat_instance"
+    "redcap_repeat_instance",
+    "redcap_data_access_group",
+    paste0(m_forms$instrument_name, "_complete")
   )
 
   test_valid(names(data), c(m_dict$field_name, fields_meta))
@@ -49,27 +53,39 @@ import_records <- function(conn,
   }
 
 
-  ## validate ------------------------------------------------------------------
-  cols_long <- c(name_id_field, m_fact$field_name)
+  ## validate factors ----------------------------------------------------------
+  if (any(m_fact$field_name %in% names(data))) {
 
-  data_long <- tidyr::pivot_longer(
-    cols_to_chr(data[,names(data) %in% cols_long, drop = FALSE]),
-    cols = !all_of(name_id_field)
-  )
+    cols_long <- c(name_id_field, m_fact$field_name)
 
-  nonvalid_factor <- dplyr::anti_join(
-    data_long[!is.na(data_long$value), , drop = FALSE],
-    m_fact,
-    by = c("name" = "field_name", "value" = "value")
-  )
-
-  if (nrow(nonvalid_factor) > 0) {
-    stop(
-      "Non-valid levels of factor-type variables:\n",
-      print_and_capture(nonvalid_factor),
-      call. = FALSE
+    data_long <- tidyr::pivot_longer(
+      cols_to_chr(data[,names(data) %in% cols_long, drop = FALSE]),
+      cols = !all_of(name_id_field)
     )
+
+    nonvalid_factor <- dplyr::anti_join(
+      data_long[!is.na(data_long$value), , drop = FALSE],
+      m_fact,
+      by = c("name" = "field_name", "value" = "value")
+    )
+
+    if (nrow(nonvalid_factor) > 0) {
+      stop(
+        "Non-valid levels of factor-type variables:\n",
+        print_and_capture(nonvalid_factor),
+        call. = FALSE
+      )
+    }
   }
+
+  ## reclass -------------------------------------------------------------------
+  cols_1dp <- m_dict$field_name[m_dict$validation %in% "number_1dp"]
+  cols_1dp <- intersect(cols_1dp, names(data))
+  data <- cols_reclass(data, cols_1dp, format_1dp)
+
+  cols_2dp <- m_dict$field_name[m_dict$validation %in% "number_2dp"]
+  cols_2dp <- intersect(cols_2dp, names(data))
+  data <- cols_reclass(data, cols_2dp, format_2dp)
 
 
   ## prepare request body ------------------------------------------------------
