@@ -5,6 +5,9 @@
 #'
 #' @param x A data frame representing a REDCap form
 #' @param dict A metadata dictionary
+#' @param times_chron Logical indicating whether to reclass time variables using
+#'   [chron::times] (`TRUE`) or leave as character (`FALSE`). Defaults to
+#'   `TRUE`.
 #'
 #' @importFrom lubridate as_date as_datetime
 #' @export reclass
@@ -12,7 +15,8 @@ reclass <- function(x,
                     dict,
                     use_factors = FALSE,
                     value_labs = TRUE,
-                    header_labs = FALSE) {
+                    header_labs = FALSE,
+                    times_chron = TRUE) {
 
   # which dictionary column corresponds to colnames of x?
   col_field <- ifelse(header_labs, "field_label", "field_name")
@@ -36,7 +40,7 @@ reclass <- function(x,
 
   # time variables
   cols_time <- dict_foc[[col_field]][grepl("^time$", dict_foc$validation)]
-  x <- cols_reclass(x, cols_time, parse_redcap_time)
+  if (times_chron) { x <- cols_reclass(x, cols_time, parse_redcap_time) }
 
   # repeat instance column to integer
   cols_instance <- ifelse(header_labs, "Repeat Instance", "redcap_repeat_instance")

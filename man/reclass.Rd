@@ -5,7 +5,14 @@
 \title{Reclass columns of a data frame to match classes specified in a metadata
 dictionary}
 \usage{
-reclass(x, dict, use_factors = FALSE, value_labs = TRUE, header_labs = FALSE)
+reclass(
+  x,
+  dict,
+  use_factors = FALSE,
+  value_labs = TRUE,
+  header_labs = FALSE,
+  times_chron = TRUE
+)
 }
 \arguments{
 \item{x}{A data frame representing a REDCap form}
@@ -25,6 +32,10 @@ yesno, checkbox). Defaults to \code{TRUE} to return labels.}
 \item{header_labs}{Logical indicating whether to export column names as
 labels (\code{TRUE}) or raw variable names (\code{FALSE}). Defaults to \code{FALSE} to
 return raw variable names.}
+
+\item{times_chron}{Logical indicating whether to reclass time variables using
+\link[chron:dates]{chron::times} (\code{TRUE}) or leave as character (\code{FALSE}). Defaults to
+\code{TRUE}.}
 }
 \description{
 Reclass columns of a data frame to match classes specified in a metadata
