@@ -22,7 +22,7 @@ empty_tibble <- function(x) {
 #'
 #' @noRd
 format_1dp <- function(x) {
-  x <- sprintf("%.1f", x)
+  x <- sprintf("%.1f", as.numeric(x))
   x[x %in% "NA"] <- NA_character_
   x
 }
@@ -32,7 +32,7 @@ format_1dp <- function(x) {
 #'
 #' @noRd
 format_2dp <- function(x) {
-  x <- sprintf("%.2f", x)
+  x <- sprintf("%.2f", as.numeric(x))
   x[x %in% "NA"] <- NA_character_
   x
 }
