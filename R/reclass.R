@@ -9,7 +9,7 @@
 #'   [chron::times] (`TRUE`) or leave as character (`FALSE`). Defaults to
 #'   `TRUE`.
 #'
-#' @importFrom lubridate as_date as_datetime
+#' @importFrom lubridate as_datetime
 #' @export reclass
 reclass <- function(x,
                     dict,
@@ -32,7 +32,7 @@ reclass <- function(x,
 
   # date variables
   cols_date <- dict_foc[[col_field]][grepl("date_", dict_foc$validation)]
-  x <- cols_reclass(x, cols_date, lubridate::as_date)
+  x <- cols_reclass(x, cols_date, parse_date)
 
   # datetime variables
   cols_datetime <- dict_foc[[col_field]][grepl("datetime_", dict_foc$validation)]
@@ -61,6 +61,7 @@ reclass <- function(x,
 }
 
 
+
 #' @noRd
 cols_reclass <- function(x, cols, fun, ...) {
   fun <- match.fun(fun)
@@ -80,3 +81,13 @@ cols_factorize <- function(x, cols, df_factors, col_field, col_level) {
   }
   x
 }
+
+
+#' @noRd
+#' @importFrom lubridate as_date parse_date_time
+parse_date <- function(x, orders = c("Ymd", "dmY")) {
+  lubridate::as_date(
+    lubridate::parse_date_time(x, orders = orders)
+  )
+}
+
