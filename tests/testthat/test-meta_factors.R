@@ -14,6 +14,12 @@ test_that("meta_factors works as expected", {
 
   m2 <- meta_factors(conn_test, forms = "enrolment")
   expect_setequal(m2$form_name, "enrolment")
+
+  m3 <- meta_factors(conn_test, add_complete = TRUE)
+  vars_complete <- paste0(meta_forms(conn_test)[[1]], "_complete")
+  expect_true(all(vars_complete %in% m3$field_name))
+  expect_setequal(m3$value[m3$field_name == vars_complete[1]], c("0", "1", "2"))
+  expect_setequal(m3$label[m3$field_name == vars_complete[1]], c("Incomplete", "Unverified", "Complete"))
 })
 
 

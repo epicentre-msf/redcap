@@ -9,6 +9,7 @@ meta_factors(
   conn,
   forms = NULL,
   expand_checkbox = TRUE,
+  add_complete = FALSE,
   types = c("radio", "yesno", "dropdown", "checkbox")
 )
 }
@@ -32,6 +33,11 @@ When \code{expand_checkbox} is \code{TRUE}, rows for checkbox fields are expande
 1 row per checkbox \emph{option}, so that dictionary entries for \code{field_name},
 \code{field_label}, and \code{choices} will always match the relevant entries
 returned by \code{\link{fetch_records}}.}
+
+\item{add_complete}{Logical indicating whether to add "\{form\}_complete"
+fields to the dictionary, one for each form included in the return. These
+will be of field_type "radio" with possible choices "0, Incomplete | 1,
+Unverified | 2, Complete". Defaults to \code{FALSE}.}
 
 \item{types}{Character vector of variable types to return field options for.
 \cr Defaults to \code{c("radio", "yesno", "dropdown", "checkbox")}.}

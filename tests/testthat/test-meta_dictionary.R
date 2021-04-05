@@ -18,6 +18,13 @@ test_that("meta_dictionary works as expected", {
 
   m3 <- meta_dictionary(conn_test, forms = "eligibility")
   expect_setequal(m3$form_name, "eligibility")
+
+  # test arg add_complete
+  m4 <- meta_dictionary(conn_test, forms = "eligibility", add_complete = TRUE)
+  expect_equal(
+    m4$choices[m4$field_name %in% "eligibility_complete"],
+    "0, Incomplete | 1, Unverified | 2, Complete"
+  )
 })
 
 

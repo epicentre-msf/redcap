@@ -53,9 +53,16 @@
 meta_factors <- function(conn,
                          forms = NULL,
                          expand_checkbox = TRUE,
+                         add_complete = FALSE,
                          types = c("radio", "yesno", "dropdown", "checkbox")) {
 
-  dict <- meta_dictionary(conn, forms = forms, expand_checkbox = expand_checkbox)
+  dict <- meta_dictionary(
+    conn,
+    forms = forms,
+    expand_checkbox = expand_checkbox,
+    add_complete = add_complete
+  )
+
   prep_meta_factors(dict, types = types)
 }
 

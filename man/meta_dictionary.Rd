@@ -8,6 +8,7 @@ meta_dictionary(
   conn,
   forms = NULL,
   expand_checkbox = TRUE,
+  add_complete = FALSE,
   cols_omit = c("section_header", "custom_alignment", "question_number",
     "matrix_group_name", "matrix_ranking")
 )
@@ -33,6 +34,11 @@ When \code{expand_checkbox} is \code{TRUE}, rows for checkbox fields are expande
 1 row per checkbox \emph{option}, so that dictionary entries for \code{field_name},
 \code{field_label}, and \code{choices} will always match the relevant entries
 returned by \code{\link{fetch_records}}.}
+
+\item{add_complete}{Logical indicating whether to add "\{form\}_complete"
+fields to the dictionary, one for each form included in the return. These
+will be of field_type "radio" with possible choices "0, Incomplete | 1,
+Unverified | 2, Complete". Defaults to \code{FALSE}.}
 
 \item{cols_omit}{Character vector of dictionary columns to omit from the
 return for brevity. Set to \code{NULL} to return all columns.}
