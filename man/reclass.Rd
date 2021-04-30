@@ -34,8 +34,8 @@ labels (\code{TRUE}) or raw variable names (\code{FALSE}). Defaults to \code{FAL
 return raw variable names.}
 
 \item{times_chron}{Logical indicating whether to reclass time variables using
-\link[chron:dates]{chron::times} (\code{TRUE}) or leave as character (\code{FALSE}). Defaults to
-\code{TRUE}.}
+\link[chron:dates]{chron::times} (\code{TRUE}) or leave as character hh:mm format (\code{FALSE}).
+Defaults to \code{TRUE}.}
 }
 \description{
 Reclass columns of a data frame to match classes specified in a metadata

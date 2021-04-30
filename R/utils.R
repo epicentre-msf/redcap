@@ -48,6 +48,14 @@ parse_redcap_time <- function(x) {
 }
 
 
+#' Convert REDCap time variables to hh:mm format, required for import
+#'
+#' @noRd
+prep_redcap_time <- function(x) {
+  gsub("(?<=^\\d\\d\\:\\d\\d)\\:00$", "", as.character(x), perl = TRUE)
+}
+
+
 #' Wrapper to dplyr::recode
 #'
 #' @noRd
