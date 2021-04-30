@@ -16,6 +16,13 @@
 #'
 #' @param forms Character vector of forms (i.e. instruments) to include. Set to
 #'   `NULL` (the default) to generate queries for all forms in the project.
+#' @param dict Metadata dictionary. By default is fetched automatically with
+#'   [`meta_dictionary`], but it's included as an argument here to allow the
+#'   user to modify the dictionary before passing to `generate_queries` (e.g. to
+#'   correct bugs in branching logic). If passing a modified version, make sure
+#'   it is initially fetched with argument `expand_checkbox = FALSE`.
+#' @param lang Query language, either English ("en") or French ("fr"). Defaults
+#'   to "en".
 #' @param query_types Which type of queries to generate (see __Description__
 #'   above). Options are "missing", "not missing", or "both". Defaults to
 #'   "both".
@@ -43,8 +50,18 @@
 #' @export generate_queries
 generate_queries <- function(conn,
                              forms = NULL,
+                             dict = meta_dictionary(
+                               conn,
+                               forms = forms,
+                               expand_checkbox = FALSE
+                             ),
+                             lang = "en",
                              query_types = "both",
+                             drop_redundant = FALSE,
                              on_error = "warn") {
+
+  ## validate argument lang
+  lang <- match.arg(lang, c("en", "fr"))
 
   ## validate argument forms
   m_instr <- meta_forms(conn)
@@ -59,11 +76,8 @@ generate_queries <- function(conn,
   query_types <- match.arg(query_types, c("missing", "not missing", "both"))
 
   ## fetch metadata dictionary
-  dict <- meta_dictionary(conn, expand_checkbox = FALSE)
   dict$field_label <- string_squish(dict$field_label)
-
-  dict_check <- meta_dictionary(conn, expand_checkbox = TRUE)
-  dict_check$field_label <- string_squish(dict_check$field_label)
+  dict_check <- expand_checkbox(dict)
 
   ## fetch metadata exported fields
   exported_fields <- meta_fields(conn)
@@ -93,6 +107,7 @@ generate_queries <- function(conn,
       use_header_labs = FALSE,
       use_is_na = TRUE,
       use_in = TRUE,
+      drop_redundant = FALSE,
       meta_factors = fact_check,
       meta_dictionary = NULL,
       on_error = on_error
@@ -107,10 +122,12 @@ generate_queries <- function(conn,
       use_header_labs = TRUE,
       use_is_na = FALSE,
       use_in = FALSE,
+      drop_redundant = drop_redundant,
       meta_factors = fact_check,
       meta_dictionary = dict_check,
       on_error = "ignore"
-    )
+    ),
+    lang = lang
   )
 
   ## prep field-portion of query expressions (i.e. 'Is missing' or 'Not missing')
@@ -167,9 +184,55 @@ generate_queries <- function(conn,
     dplyr::mutate(rownumber = seq_len(dplyr::n()))
 
   ## queries for var missing when should not be
+  lab_missing_pre <- ifelse(
+    lang == "fr",
+    "Manquant: ",
+    "Missing: "
+  )
+  lab_not_missing_pre <- ifelse(
+    lang == "fr",
+    "Renseigné: ",
+    "Not missing: "
+  )
+  lab_missing_suf <- ifelse(
+    lang == "fr",
+    " devrait être renseigné",
+    " should not be missing"
+  )
+  lab_not_missing_suf <- ifelse(
+    lang == "fr",
+    " ne devrait pas être renseigné",
+    " should be missing"
+  )
+  lab_if <- ifelse(
+    lang == "fr",
+    "Si ",
+    "If "
+  )
+  lab_unless <- ifelse(
+    lang == "fr",
+    "Sauf si ",
+    "Unless "
+  )
+  lab_item <- ifelse(
+    lang == "fr",
+    "L'élément ",
+    "Item "
+  )
+  lab_item_middle <- ifelse(
+    lang == "fr",
+    ", l'élément ",
+    ", item "
+  )
+  lab_not_missing_mid <- ifelse(
+    lang == "fr",
+    " ne devrait être renseigné que si ",
+    " should only be filled if "
+  )
+
   if (query_types %in% c("missing", "both")) {
     q_missing <- q_full %>%
-      dplyr::filter(.data$required_field %in% "y") %>%
+      # dplyr::filter(.data$required_field %in% "y") %>%
       dplyr::mutate(
         query_type = "Missing",
         query = dplyr::case_when(
@@ -178,16 +241,16 @@ generate_queries <- function(conn,
           TRUE ~ paste(.data$logic_base, .data$var_missing, sep = " & ")
         ),
         description = paste0(
-          "Missing: ", enclose(.data$field_label, l = "[", r = "]")
+          .env$lab_missing_pre, enclose(.data$field_label, l = "[", r = "]")
         ),
         suggestion = dplyr::if_else(
           is.na(.data$branching_logic),
           paste0(
-            "Item ", enclose(.data$field_label, l = "[", r = "]"), " should not be missing"
+            .env$lab_item, enclose(.data$field_label, l = "[", r = "]"), .env$lab_missing_suf
           ),
           paste0(
-            "If ", .data$logic_base_text, ", item ",
-            enclose(.data$field_label, l = "[", r = "]"), " should not be missing"
+            .env$lab_if, .data$logic_base_text, .env$lab_item_middle,
+            enclose(.data$field_label, l = "[", r = "]"), .env$lab_missing_suf
           )
         )
       )
@@ -202,10 +265,12 @@ generate_queries <- function(conn,
       dplyr::mutate(
         query_type = "Not missing",
         query = paste0("!", .data$logic_base, " & ", .data$var_not_missing),
-        description = paste0("Not missing: ", enclose(.data$field_label, l = "[", r = "]")),
+        description = paste0(.env$lab_not_missing_pre, enclose(.data$field_label, l = "[", r = "]")),
         suggestion = paste0(
-          "Unless ", .data$logic_base_text, ", item ",
-          enclose(.data$field_label, l = "[", r = "]"), " should be missing"
+          .env$lab_item,
+          enclose(.data$field_label, l = "[", r = "]"),
+          .env$lab_not_missing_mid,
+          .data$logic_base_text
         )
       )
   } else {
@@ -239,13 +304,26 @@ generate_queries <- function(conn,
 
 
 #' @noRd
-translate_human <- function(x) {
+translate_human <- function(x, lang = "en") {
+
+  lang <- match.arg(lang, c("en", "fr"))
+
   x <- gsub("\"\\[", "[", x)
   x <- gsub("\\]\"", "]", x)
-  x <- gsub(" == ", " is ", x)
-  x <- gsub(" != ", " is not ", x)
-  x <- gsub(" \\& ", " and ", x)
-  x <- gsub(" \\| ", " or ", x)
-  x <- gsub("\"\"", "missing", x)
+
+  if (lang == "fr") {
+    x <- gsub(" == ", " est ", x)
+    x <- gsub(" != ", " n'est pas ", x)
+    x <- gsub(" \\& ", " et ", x)
+    x <- gsub(" \\| ", " ou ", x)
+    x <- gsub("\"\"", "manquant", x)
+  } else {
+    x <- gsub(" == ", " is ", x)
+    x <- gsub(" != ", " is not ", x)
+    x <- gsub(" \\& ", " and ", x)
+    x <- gsub(" \\| ", " or ", x)
+    x <- gsub("\"\"", "missing", x)
+  }
+
   x
 }

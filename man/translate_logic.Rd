@@ -10,6 +10,7 @@ translate_logic(
   use_header_labs = FALSE,
   use_is_na = TRUE,
   use_in = TRUE,
+  drop_redundant = FALSE,
   meta_factors = NULL,
   meta_dictionary = NULL,
   on_error = "warn"
@@ -39,6 +40,11 @@ missingness with \code{\link{is.na}}. E.g.:\cr
 with \code{\link{\%in\%}}. E.g.:\cr
 \code{y == 'Yes'} becomes \code{y \%in\% 'Yes'}\cr
 \code{y != 'Yes'} becomes \code{!y \%in\% 'Yes'}}
+
+\item{drop_redundant}{Logical indicating whether to simplify expressions by
+removing redundant components from expressions that test both for equality
+and inequality with the same variable. E.g.:\cr
+\code{var == "X" & var != ""} becomes \code{var == "X"}}
 
 \item{meta_factors}{A data frame containing variable names (column
 \code{field_name}) and corresponding values (column \code{value}) and labels (column

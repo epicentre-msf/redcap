@@ -5,7 +5,15 @@
 \title{Generate data validation queries for a REDCap project based on branching
 logic specified in the project codebook}
 \usage{
-generate_queries(conn, forms = NULL, query_types = "both", on_error = "warn")
+generate_queries(
+  conn,
+  forms = NULL,
+  dict = meta_dictionary(conn, forms = forms, expand_checkbox = FALSE),
+  lang = "en",
+  query_types = "both",
+  drop_redundant = FALSE,
+  on_error = "warn"
+)
 }
 \arguments{
 \item{conn}{A REDCap API connection object (created with \code{\link{rconn}})}
@@ -13,9 +21,23 @@ generate_queries(conn, forms = NULL, query_types = "both", on_error = "warn")
 \item{forms}{Character vector of forms (i.e. instruments) to include. Set to
 \code{NULL} (the default) to generate queries for all forms in the project.}
 
+\item{dict}{Metadata dictionary. By default is fetched automatically with
+\code{\link{meta_dictionary}}, but it's included as an argument here to allow the
+user to modify the dictionary before passing to \code{generate_queries} (e.g. to
+correct bugs in branching logic). If passing a modified version, make sure
+it is initially fetched with argument \code{expand_checkbox = FALSE}.}
+
+\item{lang}{Query language, either English ("en") or French ("fr"). Defaults
+to "en".}
+
 \item{query_types}{Which type of queries to generate (see \strong{Description}
 above). Options are "missing", "not missing", or "both". Defaults to
 "both".}
+
+\item{drop_redundant}{Logical indicating whether to simplify expressions by
+removing redundant components from expressions that test both for equality
+and inequality with the same variable. E.g.:\cr
+\code{var == "X" & var != ""} becomes \code{var == "X"}}
 
 \item{on_error}{What to do if one or more elements of statements can't be
 translated into valid R expressions? Options are "ignore" (return \code{NA} for

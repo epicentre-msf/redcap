@@ -30,6 +30,10 @@
 #'   with [`%in%`]. E.g.:\cr
 #'   `y == 'Yes'` becomes `y %in% 'Yes'`\cr
 #'   `y != 'Yes'` becomes `!y %in% 'Yes'`
+#' @param drop_redundant Logical indicating whether to simplify expressions by
+#'   removing redundant components from expressions that test both for equality
+#'   and inequality with the same variable. E.g.:\cr
+#'  `var == "X" & var != ""` becomes `var == "X"`
 #' @param meta_factors A data frame containing variable names (column
 #'   `field_name`) and corresponding values (column `value`) and labels (column
 #'   `label`) for factor-type variables. Fetch with [`meta_factors`]. Only
@@ -64,6 +68,7 @@ translate_logic <- function(x,
                             use_header_labs = FALSE,
                             use_is_na = TRUE,
                             use_in = TRUE,
+                            drop_redundant = FALSE,
                             meta_factors = NULL,
                             meta_dictionary = NULL,
                             on_error = "warn") {
@@ -91,6 +96,7 @@ translate_logic <- function(x,
     use_header_labs = use_header_labs,
     use_is_na = use_is_na,
     use_in = use_in,
+    drop_redundant = drop_redundant,
     meta_factors = meta_factors,
     meta_dictionary = meta_dictionary
   )
@@ -124,6 +130,7 @@ translate_logic_ <- function(x,
                              use_header_labs,
                              use_is_na,
                              use_in,
+                             drop_redundant,
                              meta_factors,
                              meta_dictionary) {
 
@@ -131,6 +138,11 @@ translate_logic_ <- function(x,
     x_prep <- try(translate_prep(x), silent = TRUE)
 
     if (!"try-error" %in% class(x_prep)) {
+
+      if (drop_redundant) {
+        x_prep <- drop_redundant_traverse(x_prep)
+      }
+
       x_out <- translate_traverse(
         x_prep,
         use_value_labs = use_value_labs,
@@ -154,7 +166,6 @@ translate_logic_ <- function(x,
 }
 
 
-
 #' Initial gsub step for translating REDCap-style expressions to R
 #'
 #' @param x A call returned by [`str2lang()`]
@@ -175,6 +186,24 @@ translate_prep <- function(x) {
   str2lang(x)
 }
 
+
+#' @noRd
+drop_redundant_traverse <- function(x) {
+
+  if (is_expr_lowest_drop(x)) {
+    x <- drop_redundant(x)
+  } else {
+    for (i in seq_len(length(x))) {
+      if (is_expr_lowest_drop(x[[i]])) {
+        x[[i]] <- drop_redundant(x[[i]])
+      } else {
+        x[[i]] <- drop_redundant_traverse(x[[i]])
+      }
+    }
+  }
+
+  x
+}
 
 
 #' Recursive function used to traverse expressions from top-down to break into
@@ -218,7 +247,6 @@ translate_traverse <- function(x,
 
   x
 }
-
 
 
 #' Swap factor-variable options (e.g. '0'/'1') with labels (e.g. 'Yes'/'No'),
@@ -342,7 +370,6 @@ translate_equals <- function(x, vars_factor, use_is_na) {
   # Search expression for:
   # - a factor-type variable
   # - an equal or not-equal sign ("==" | "!=")
-
   has_factor <- any(all.vars(x) %in% vars_factor)
   is_equal <- as.character(x) %in% "=="
   is_not_equal <- as.character(x) %in% "!="
@@ -369,5 +396,63 @@ translate_equals <- function(x, vars_factor, use_is_na) {
 #' @noRd
 is_expr_lowest <- function(x) {
    all(lengths(as.list(x)) == 1L) & length(x) <= 3L
+}
+
+
+
+#' @noRd
+drop_redundant <- function(x) {
+
+  x_vec <- as.character(x)
+  x_list <- as.list(x)
+
+  has_and <-  x_vec[1] == "&"
+  is_equal <- vapply(x_list, any_equal, FALSE)
+  is_not_missing <- vapply(x_list, any_not_missing, FALSE)
+
+  if (has_and & any(is_equal) & any(is_not_missing)) {
+
+    i_equal <- which(is_equal)
+    i_not_missing <- which(is_not_missing)
+
+    same_var <- all.vars(x_list[[i_equal]]) == all.vars(x_list[[i_not_missing]])
+
+    if (same_var) {
+      x <- x[[i_equal]]
+    }
+  }
+
+  x
+}
+
+
+#' @noRd
+is_expr_lowest_drop <- function(x) {
+  length(x) <= 3 & n_operators(x) <= 1
+}
+
+
+#' @noRd
+#' @importFrom utils getParseData
+n_operators <- function(x) {
+  x_deparse <- deparse1(x)
+  n <- if (nchar(x_deparse) == 1) { # bit of a hack
+    0
+  } else {
+    sum(getParseData(parse(text = x_deparse))$token %in% c("OR", "AND"))
+  }
+  n
+}
+
+
+#' @noRd
+any_equal <- function(x) {
+  any(as.character(x) %in% "==")
+}
+
+
+#' @noRd
+any_not_missing <- function(x) {
+  any(as.character(x) %in% "") & any(as.character(x) %in% "!=")
 }
 
