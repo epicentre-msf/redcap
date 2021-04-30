@@ -191,17 +191,17 @@ generate_queries <- function(conn,
   )
   lab_not_missing_pre <- ifelse(
     lang == "fr",
-    "Renseigné: ",
+    "Renseign\U00E9: ",
     "Not missing: "
   )
   lab_missing_suf <- ifelse(
     lang == "fr",
-    " devrait être renseigné",
+    " devrait \U00EAtre renseign\U00E9",
     " should not be missing"
   )
   lab_not_missing_suf <- ifelse(
     lang == "fr",
-    " ne devrait pas être renseigné",
+    " ne devrait pas \U00EAtre renseign\U00E9",
     " should be missing"
   )
   lab_if <- ifelse(
@@ -216,17 +216,17 @@ generate_queries <- function(conn,
   )
   lab_item <- ifelse(
     lang == "fr",
-    "L'élément ",
+    "L'\U00E9l\U00E9ment ",
     "Item "
   )
   lab_item_middle <- ifelse(
     lang == "fr",
-    ", l'élément ",
+    ", l'\U00E9l\U00E9ment ",
     ", item "
   )
   lab_not_missing_mid <- ifelse(
     lang == "fr",
-    " ne devrait être renseigné que si ",
+    " ne devrait \U00EAtre renseign\U00E9 que si ",
     " should only be filled if "
   )
 
