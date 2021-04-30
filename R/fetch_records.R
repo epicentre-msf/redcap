@@ -246,10 +246,16 @@ fetch_records_ <- function(conn,
   col_event <- ifelse(header_labs, "Event Name", "redcap_event_name")
   col_repeat_instrument <- ifelse(header_labs, "Repeat Instrument", "redcap_repeat_instrument")
   col_repeat_instance <- ifelse(header_labs, "Repeat Instance", "redcap_repeat_instance")
+  col_dag <- ifelse(header_labs, "Data Access Group", "redcap_data_access_group")
 
+  # add meta cols
+  # note that the repeat cols seem to be returned anytime there are any repeating
+  # forms in the project, even if the requested form/event is not repeating
+  # need to check whether this behavior is general/consistent
   cols_base <- col_id
   if (!is.null(events)) cols_base <- c(cols_base, col_event)
-  if (!is.null(m_repeat) && any(forms %in% m_repeat$form_name)) cols_base <- c(cols_base, col_repeat_instrument, col_repeat_instance)
+  if (!is.null(m_repeat) && nrow(m_repeat) > 1) cols_base <- c(cols_base, col_repeat_instrument, col_repeat_instance)
+  if (dag) cols_base <- c(cols_base, col_dag)
 
   if (!any(names(out) %in% cols_form)) {
     out <- empty_tibble(c(cols_base, setdiff(cols_form, cols_base)))
@@ -359,11 +365,12 @@ all_fields_missing <- function(x,
                                forms,
                                value_labs,
                                header_labs,
-                               checkbox_labs) {
+                               checkbox_labs,
+                               drop_first_row = TRUE) {
 
   col_field <- ifelse(header_labs, "field_label", "field_name")
 
-  dict <- dict[-1, , drop = FALSE]
+  if (drop_first_row) dict <- dict[-1, , drop = FALSE]
   dict_form <- dict[dict$form_name %in% forms, , drop = FALSE]
 
   # if value_labs = TRUE
