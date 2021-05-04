@@ -44,6 +44,9 @@ format_2dp <- function(x) {
 #' @importFrom chron times
 parse_redcap_time <- function(x) {
   x <- gsub("(^\\d{2}:\\d{2}$)", "\\1:00", x)
+  # line below to avoid weird behavior when testing for NA in a chron times
+  # column that contains all NA (e.g. within apply)
+  if (all(is.na(x))) x <- as.numeric(x)
   chron::times(x, format = c(times = "h:m:s"))
 }
 
