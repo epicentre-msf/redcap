@@ -100,7 +100,7 @@ generate_queries <- function(conn,
 
   q_logic <- dict[rows_logic, fields_logic]
 
-  q_logic$logic_base <- enclose(
+  q_logic$logic_base <- wrap_parens(
     translate_logic(
       unparens(q_logic$branching_logic),
       use_value_labs = TRUE,
@@ -111,8 +111,7 @@ generate_queries <- function(conn,
       meta_factors = fact_check,
       meta_dictionary = NULL,
       on_error = on_error
-    ),
-    l = "(", r = ")"
+    )
   )
 
   q_logic$logic_base_text <- translate_human(
@@ -264,7 +263,7 @@ generate_queries <- function(conn,
       dplyr::filter(!is.na(.data$logic_base)) %>%
       dplyr::mutate(
         query_type = "Not missing",
-        query = paste0("!", enclose(.data$logic_base, l = "(", r = ")"), " & ", .data$var_not_missing),
+        query = paste0("!", wrap_parens(.data$logic_base), " & ", .data$var_not_missing),
         description = paste0(.env$lab_not_missing_pre, enclose(.data$field_label, l = "[", r = "]")),
         suggestion = paste0(
           .env$lab_item,

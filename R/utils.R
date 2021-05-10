@@ -89,6 +89,34 @@ enclose <- function(x, l, r) {
 }
 
 
+#' Wrap a string representing an expression in parentheses, if not already
+#' enclosed
+#'
+#' @param x A string to enclose
+#' @param l Character symbol to add on left side
+#' @param r Character symbol to add on right
+#'
+#' @noRd
+wrap_parens <- function(x, l = "(", r = ")") {
+  already_enclosed <- is_enclosed_paren(x) | is.na(x)
+  x[!already_enclosed] <- paste0(l, x[!already_enclosed], r)
+  x
+}
+
+
+#' Test if a string representing an expression is enclosed in parentheses
+#'
+#' @noRd
+is_enclosed_paren <- function(x) {
+  vapply(
+    x,
+    function(x) as.character(str2lang(x))[1] == "(",
+    FALSE,
+    USE.NAMES = FALSE
+  )
+}
+
+
 #' Remove enclosing backticks
 #'
 #' @noRd
