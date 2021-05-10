@@ -264,7 +264,7 @@ generate_queries <- function(conn,
       dplyr::filter(!is.na(.data$logic_base)) %>%
       dplyr::mutate(
         query_type = "Not missing",
-        query = paste0("!", .data$logic_base, " & ", .data$var_not_missing),
+        query = paste0("!", enclose(.data$logic_base, l = "(", r = ")"), " & ", .data$var_not_missing),
         description = paste0(.env$lab_not_missing_pre, enclose(.data$field_label, l = "[", r = "]")),
         suggestion = paste0(
           .env$lab_item,
