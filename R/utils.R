@@ -1,4 +1,16 @@
 
+
+
+#' @noRd
+#' @importFrom stats setNames
+post_array <- function(x) {
+  stats::setNames(
+    x,
+    paste0(deparse(substitute(x)), "[", seq_along(x) - 1, "]")
+  )
+}
+
+
 #' Create an empty tibble based on a set of column names. All columns of class
 #' character.
 #'

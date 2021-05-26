@@ -81,6 +81,10 @@ df_records <- fetch_records(conn, forms = "eligibility")
 ### fetch records from all forms (as a list of data frames, one per form)
 db_records <- fetch_database(conn)
 
+### project backup/logging
+backup_xml <- project_xml(conn)
+backup_logs <- project_logging(conn)
+
 ### generate queries based on branching logic in project codebook
 df_queries <- generate_queries(conn)
 

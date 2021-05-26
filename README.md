@@ -19,23 +19,23 @@ Nutter.
 
 #### Features
 
-  - Outputs
+-   Outputs
     [tibble](https://tibble.tidyverse.org/reference/tbl_df-class.html)-style
     data frames
-  - New features for `fetch_records()`
-      - by default, ensure record ID field always returned
-      - by default, omit rows where all form-specific fields are empty
-      - optional arguments for resolving Double Data Entry to single
+-   New features for `fetch_records()`
+    -   by default, ensure record ID field always returned
+    -   by default, omit rows where all form-specific fields are empty
+    -   optional arguments for resolving Double Data Entry to single
         entry per record
-      - simplified column classes
-          - REDCap categorical variables have class “character” (can
+    -   simplified column classes
+        -   REDCap categorical variables have class “character” (can
             optionally use “factor”)
-          - REDCap date variables have class “Date” (“POSIXct” used only
+        -   REDCap date variables have class “Date” (“POSIXct” used only
             for datetime variables)
-  - New function `fetch_database()` vectorizes `fetch_records()` over
+-   New function `fetch_database()` vectorizes `fetch_records()` over
     forms. Accepts additional functions as arguments, e.g. for deriving
     new variables or customizing form names
-  - New function `generate_queries()` creates data validation queries
+-   New function `generate_queries()` creates data validation queries
     based on branching logic specified in the project codebook. These
     can be run using the `query_vec()` function in
     [queryr](https://github.com/epicentre-msf/queryr).
@@ -65,7 +65,7 @@ conn <- rconn(
 
 ### fetch REDCap version number
 redcap_version(conn)
-#> [1] "10.0.29"
+#> [1] "10.8.5"
 
 ### fetch metadata tables
 df_dictionary <- meta_dictionary(conn)
@@ -80,6 +80,10 @@ df_records <- fetch_records(conn, forms = "eligibility")
 
 ### fetch records from all forms (as a list of data frames, one per form)
 db_records <- fetch_database(conn)
+
+### project backup/logging
+backup_xml <- project_xml(conn)
+backup_logs <- project_logging(conn)
 
 ### generate queries based on branching logic in project codebook
 df_queries <- generate_queries(conn)
@@ -99,8 +103,6 @@ queries_out <- queryr::query_vec(
 ### More examples
 
 1.  Customize form-specific names returned by `fetch_database()`
-
-<!-- end list -->
 
 ``` r
 ### default element names returned by fetch_database() are REDCap form names
@@ -123,8 +125,6 @@ names(db_records)
 ```
 
 2.  Pass additional functions to `fetch_database()` to act on each form
-
-<!-- end list -->
 
 ``` r
 library(dplyr, warn.conflicts = FALSE)

@@ -25,7 +25,9 @@ Imports:
     readr,
     lubridate,
     chron,
-    stringr
-Suggests: 
+    stringr,
+    xml2
+Suggests:
     testthat,
     covr
+    
