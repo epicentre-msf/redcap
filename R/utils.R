@@ -223,7 +223,8 @@ post_wrapper <- function(conn,
       out <- httr::content(
         response,
         col_types = readr::cols(.default = readr::col_character()),
-        na = na
+        na = na,
+        progress = FALSE
       )
     )
   }
