@@ -11,6 +11,7 @@ generate_queries(
   dict = meta_dictionary(conn, forms = forms, expand_checkbox = FALSE),
   lang = "en",
   query_types = "both",
+  non_required = FALSE,
   drop_redundant = FALSE,
   on_error = "warn"
 )
@@ -33,6 +34,9 @@ to "en".}
 \item{query_types}{Which type of queries to generate (see \strong{Description}
 above). Options are "missing", "not missing", or "both". Defaults to
 "both".}
+
+\item{non_required}{Logical indicating whether to include non-required fields
+in queries of type "Field missing". Defaults to \code{FALSE}.}
 
 \item{drop_redundant}{Logical indicating whether to simplify expressions by
 removing redundant components from expressions that test both for equality
@@ -66,7 +70,7 @@ Generates two types of data validation queries using the project codebook
 (see \code{\link{meta_dictionary}}) and \code{\link{translate_logic}}:
 \enumerate{
 \item \strong{Field missing}: Branching logic evaluates to \code{TRUE} (if specified), but
-field is missing. Only applies to required fields (\code{required_field == "y"}).
+field is missing. By default only applies to required fields (\code{required_field == "y"}) (can modify with argument \code{non_required}).
 \item \strong{Field not missing}: Branching logic evaluates to \code{FALSE} but field is
 not missing. Applies to any field with branching logic.
 }

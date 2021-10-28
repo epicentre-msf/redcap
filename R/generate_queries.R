@@ -6,7 +6,8 @@
 #' (see [`meta_dictionary`]) and [`translate_logic`]:
 #'
 #' 1. __Field missing__: Branching logic evaluates to `TRUE` (if specified), but
-#' field is missing. Only applies to required fields (`required_field == "y"`).
+#' field is missing. By default only applies to required fields (`required_field
+#' == "y"`) (can modify with argument `non_required`).
 #'
 #' 2. __Field not missing__: Branching logic evaluates to `FALSE` but field is
 #' not missing. Applies to any field with branching logic.
@@ -26,6 +27,8 @@
 #' @param query_types Which type of queries to generate (see __Description__
 #'   above). Options are "missing", "not missing", or "both". Defaults to
 #'   "both".
+#' @param non_required Logical indicating whether to include non-required fields
+#'   in queries of type "Field missing". Defaults to `FALSE`.
 #'
 #' @return
 #' A [`tibble`][tibble::tbl_df]-style data frame specifying queries, with the
@@ -57,6 +60,7 @@ generate_queries <- function(conn,
                              ),
                              lang = "en",
                              query_types = "both",
+                             non_required = FALSE,
                              drop_redundant = FALSE,
                              on_error = "warn") {
 
@@ -230,8 +234,15 @@ generate_queries <- function(conn,
   )
 
   if (query_types %in% c("missing", "both")) {
+
+    if (non_required) {
+      req_fields <- c("y", NA_character_)
+    } else {
+      req_fields <- "y"
+    }
+
     q_missing <- q_full %>%
-      # dplyr::filter(.data$required_field %in% "y") %>%
+      dplyr::filter(.data$required_field %in% req_fields) %>%
       dplyr::mutate(
         query_type = "Missing",
         query = dplyr::case_when(
