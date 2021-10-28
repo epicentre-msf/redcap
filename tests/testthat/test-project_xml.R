@@ -31,5 +31,5 @@ test_that("project_xml works as expected", {
 test_that("project_xml fails gracefully", {
 
   expect_error(project_xml(conn_test, fields = c("record_id", "fake_field")))
-  expect_error(project_logging(conn_test, events = c("fake_event")))
+  expect_error(project_xml(conn_test, events = c("fake_event")))
 })
