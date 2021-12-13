@@ -182,7 +182,7 @@ test_valid <- function(arg, options) {
 
 
 #' @noRd
-#' @importFrom httr POST content
+#' @importFrom httr POST content stop_for_status
 #' @importFrom readr cols col_character
 post_wrapper <- function(conn,
                          body = NULL,
@@ -213,7 +213,9 @@ post_wrapper <- function(conn,
   )
 
   if (response$status_code != 200L) {
-    if (on_error == "fail") {
+    if (response$status_code == 504L) {
+      httr::stop_for_status(response)
+    } else if (on_error == "fail") {
       stop(httr::content(response)[[1]], call. = FALSE)
     } else {
       out <- NULL
