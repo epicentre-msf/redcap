@@ -48,7 +48,7 @@
 #' }
 #'
 #' @importFrom dplyr `%>%` filter mutate select left_join if_else n rename
-#'   arrange all_of bind_rows group_by ungroup
+#'   arrange all_of bind_rows group_by ungroup across
 #' @importFrom rlang .data .env
 #' @export generate_queries
 generate_queries <- function(conn,
@@ -271,7 +271,7 @@ generate_queries <- function(conn,
   ## queries for var not missing when should be
   if (query_types %in% c("not missing", "both")) {
     q_not_missing <- q_full %>%
-      dplyr::filter(!is.na(.data$logic_base)) %>%
+      dplyr::filter(!is.na(.data$branching_logic)) %>%
       dplyr::mutate(
         query_type = "Not missing",
         query = paste0("!", wrap_parens(.data$logic_base), " & ", .data$var_not_missing),
@@ -281,6 +281,12 @@ generate_queries <- function(conn,
           enclose(.data$field_label, l = "[", r = "]"),
           .env$lab_not_missing_mid,
           .data$logic_base_text
+        )
+      ) %>%
+      dplyr::mutate(
+        dplyr::across(
+          c(.data$query, .data$description, .data$suggestion),
+          ~ dplyr::if_else(is.na(.data$logic_base), NA_character_, .x)
         )
       )
   } else {
