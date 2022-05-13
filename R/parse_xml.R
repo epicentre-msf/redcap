@@ -1,5 +1,6 @@
 #' Convert a REDCap project XML file to a tidy data frame of project records
 #'
+#' @description
 #' Extract records from a REDCap project XML file (e.g. returned by
 #' [`project_xml`]) and assemble into a tidy long-form data frame, with one row
 #' for each combination of record x field x event x instance.
@@ -43,16 +44,27 @@ parse_xml <- function(x) {
 
 #' @noRd
 #' @importFrom xml2 xml_attr xml_find_all
-#' @importFrom purrr map_dfr
+#' @importFrom purrr map2_dfr
 #' @importFrom dplyr mutate `%>%`
 #' @importFrom rlang .env .data
 participant_to_df <- function(x, ns) {
 
   record_id <- xml2::xml_attr(x, "SubjectKey", ns = ns)
+
   x_events <- xml2::xml_find_all(x, ".//d1:StudyEventData", ns = ns)
 
-  purrr::map_dfr(x_events, event_to_df, ns = ns) %>%
-    dplyr::mutate(record_id = .env$record_id, .before = 1)
+  event <- xml2::xml_attr(x_events, "StudyEventOID", ns = ns)
+  event <- gsub("^Event\\.", "", event)
+  if (length(event) == 0)  event <- NA_character_
+
+  if (length(x_events) == 0) {
+    out <- event_to_df(x, event, ns = ns)
+  } else {
+    out <- purrr::map2_dfr(x_events, event, event_to_df, ns = ns) %>%
+      dplyr::mutate(record_id = .env$record_id, .before = 1)
+  }
+
+  out
 }
 
 
@@ -61,10 +73,7 @@ participant_to_df <- function(x, ns) {
 #' @importFrom purrr map_dfr
 #' @importFrom dplyr mutate `%>%`
 #' @importFrom rlang .env .data
-event_to_df <- function(x, ns) {
-
-  event <- xml2::xml_attr(x, "StudyEventOID", ns = ns)
-  event <- gsub("^Event\\.", "", event)
+event_to_df <- function(x, event, ns) {
 
   x_forms <- xml2::xml_find_all(x, ".//d1:FormData", ns = ns)
 

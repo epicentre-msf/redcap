@@ -29,9 +29,6 @@ recode_labels <- function(x,
   # which dictionary column corresponds to colnames of x?
   col_field <- ifelse(header_labs, "field_label", "field_name")
 
-  # subset dictionary to variables in x
-  dict_foc <- dict[dict[[col_field]] %in% names(x), , drop = FALSE]
-
   # convert redcap_event_name
   cols_event <- ifelse(header_labs, "Event Name", "redcap_event_name")
   cols_event <- intersect(cols_event, names(x))
