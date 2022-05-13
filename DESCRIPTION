@@ -31,4 +31,5 @@ Imports:
 Suggests:
     testthat,
     covr
-URL: https://epicentre-msf.github.io/redcap/
+URL: https://github.com/epicentre-msf/redcap
+BugReports: https://github.com/epicentre-msf/redcap/issues
