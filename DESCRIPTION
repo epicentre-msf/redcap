@@ -26,7 +26,8 @@ Imports:
     lubridate,
     chron,
     stringr,
-    xml2
+    xml2,
+    lifecycle
 Suggests:
     testthat,
     covr
