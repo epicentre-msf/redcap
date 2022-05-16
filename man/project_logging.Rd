@@ -9,9 +9,9 @@ project_logging(
   type = NULL,
   user = NULL,
   record = NULL,
-  datetime_start = NULL,
-  datetime_end = NULL,
-  datetime_to_posix = TRUE
+  time_start = NULL,
+  time_end = NULL,
+  timestamp_to_posix = TRUE
 )
 }
 \arguments{
@@ -41,13 +41,13 @@ relating to all record IDs. Note that, in the current API version (10.8.5),
 it's not possible to pass a character vector with multiple record IDs (i.e.
 one record per request, or NULL for all).}
 
-\item{datetime_start}{Fetch logs from \emph{after} a given date-time. Use format
+\item{time_start}{Fetch logs from \emph{after} a given date-time. Use format
 "YYYY-MM-DD HH:MM". Defaults to NULL to omit a lower time limit.}
 
-\item{datetime_end}{Fetch logs from \emph{before} a given date-time. Use format
+\item{time_end}{Fetch logs from \emph{before} a given date-time. Use format
 "YYYY-MM-DD HH:MM". Defaults to NULL to omit an upper time limit.}
 
-\item{datetime_to_posix}{Logical indicating whether to convert the
+\item{timestamp_to_posix}{Logical indicating whether to convert the
 \code{timestamp} column to class POSIXct using \code{\link[lubridate:as_date]{lubridate::as_datetime}}.
 Defaults to TRUE.}
 }
