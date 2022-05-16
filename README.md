@@ -41,7 +41,7 @@ Nutter.
     [queryr](https://github.com/epicentre-msf/queryr).
 
 *Note this package has only been tested with REDCap versions 10.0 -
-10.5*
+10.8*
 
 ### Installation
 
@@ -71,6 +71,7 @@ redcap_version(conn)
 df_dictionary <- meta_dictionary(conn)
 df_fields     <- meta_fields(conn)
 df_forms      <- meta_forms(conn)
+df_arms       <- meta_arms(conn)
 df_events     <- meta_events(conn)
 df_mapping    <- meta_mapping(conn)
 df_repeating  <- meta_repeating(conn)
@@ -80,6 +81,12 @@ df_records <- fetch_records(conn, forms = "eligibility")
 
 ### fetch records from all forms (as a list of data frames, one per form)
 db_records <- fetch_database(conn)
+
+### project/user info
+df_info <- project_info(conn)
+df_users <- project_users(conn)
+df_dags <- project_dags(conn)
+df_users_dags <- project_users_dags(conn)
 
 ### project backup/logging
 backup_xml <- project_xml(conn)
@@ -145,7 +152,7 @@ add_form_date  <- function(df) {
 
 db_records <- fetch_database(conn, fns = list(add_form_date))
 db_records$enrolment[,1:5] # print first few cols to show new form_date column
-#> # A tibble: 3 x 5
+#> # A tibble: 3 × 5
 #>   record_id form_date  redcap_event_name redcap_repeat_instrument redcap_repeat_instance
 #>   <chr>     <date>     <chr>             <chr>                                     <int>
 #> 1 0001      2020-12-01 Enrollment        <NA>                                         NA

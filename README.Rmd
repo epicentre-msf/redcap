@@ -41,7 +41,7 @@ Benjamin Nutter.
   branching logic specified in the project codebook. These can be run using the
   `query_vec()` function in [queryr](https://github.com/epicentre-msf/queryr).
   
-_Note this package has only been tested with REDCap versions 10.0 - 10.5_
+_Note this package has only been tested with REDCap versions 10.0 - 10.8_
 
 ### Installation
 
@@ -71,6 +71,7 @@ redcap_version(conn)
 df_dictionary <- meta_dictionary(conn)
 df_fields     <- meta_fields(conn)
 df_forms      <- meta_forms(conn)
+df_arms       <- meta_arms(conn)
 df_events     <- meta_events(conn)
 df_mapping    <- meta_mapping(conn)
 df_repeating  <- meta_repeating(conn)
@@ -80,6 +81,12 @@ df_records <- fetch_records(conn, forms = "eligibility")
 
 ### fetch records from all forms (as a list of data frames, one per form)
 db_records <- fetch_database(conn)
+
+### project/user info
+df_info <- project_info(conn)
+df_users <- project_users(conn)
+df_dags <- project_dags(conn)
+df_users_dags <- project_users_dags(conn)
 
 ### project backup/logging
 backup_xml <- project_xml(conn)
