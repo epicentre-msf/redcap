@@ -34,6 +34,9 @@
     <loc>https://epicentre-msf.github.io/redcap/reference/index.html</loc>
   </url>
   <url>
+    <loc>https://epicentre-msf.github.io/redcap/reference/meta_arms.html</loc>
+  </url>
+  <url>
     <loc>https://epicentre-msf.github.io/redcap/reference/meta_dictionary.html</loc>
   </url>
   <url>
@@ -61,7 +64,19 @@
     <loc>https://epicentre-msf.github.io/redcap/reference/parse_xml.html</loc>
   </url>
   <url>
+    <loc>https://epicentre-msf.github.io/redcap/reference/project_dags.html</loc>
+  </url>
+  <url>
+    <loc>https://epicentre-msf.github.io/redcap/reference/project_info.html</loc>
+  </url>
+  <url>
     <loc>https://epicentre-msf.github.io/redcap/reference/project_logging.html</loc>
+  </url>
+  <url>
+    <loc>https://epicentre-msf.github.io/redcap/reference/project_users.html</loc>
+  </url>
+  <url>
+    <loc>https://epicentre-msf.github.io/redcap/reference/project_users_dags.html</loc>
   </url>
   <url>
     <loc>https://epicentre-msf.github.io/redcap/reference/project_xml.html</loc>
