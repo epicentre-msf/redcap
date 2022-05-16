@@ -26,10 +26,13 @@
 #'   relating to all record IDs. Note that, in the current API version (10.8.5),
 #'   it's not possible to pass a character vector with multiple record IDs (i.e.
 #'   one record per request, or NULL for all).
-#' @param time_start Fetch logs from *after* a given date/time. Use format
+#' @param datetime_start Fetch logs from *after* a given date-time. Use format
 #'   "YYYY-MM-DD HH:MM". Defaults to NULL to omit a lower time limit.
-#' @param time_end Fetch logs from *before* a given date/time. Use format
+#' @param datetime_end Fetch logs from *before* a given date-time. Use format
 #'   "YYYY-MM-DD HH:MM". Defaults to NULL to omit an upper time limit.
+#' @param datetime_to_posix Logical indicating whether to convert the
+#'   `timestamp` column to class POSIXct using [`lubridate::as_datetime`].
+#'   Defaults to TRUE.
 #'
 #' @return
 #' A [`tibble`][tibble::tbl_df]-style data frame with 4 columns:
@@ -48,13 +51,15 @@
 #' project_logging(conn)
 #' }
 #'
+#' @importFrom lubridate parse_date_time
 #' @export project_logging
 project_logging <- function(conn,
                             type = NULL,
                             user = NULL,
                             record = NULL,
-                            time_start = NULL,
-                            time_end = NULL) {
+                            datetime_start = NULL,
+                            datetime_end = NULL,
+                            datetime_to_posix = TRUE) {
 
   # validate args
   if (!is.null(type)) {
@@ -88,16 +93,22 @@ project_logging <- function(conn,
     logtype = type,
     user = user,
     record = record,
-    beginTime = time_start,
-    endTime = time_end,
+    beginTime = datetime_start,
+    endTime = datetime_end,
     format = "csv",
     returnFormat = "json"
   )
 
-  post_wrapper(
+  out <- post_wrapper(
     conn,
     body = body,
     on_error = "fail"
   )
+
+  if (datetime_to_posix & is.data.frame(out)) {
+    out$timestamp <- lubridate::parse_date_time(out$timestamp, orders = "Ymd HM")
+  }
+
+  out
 }
 
