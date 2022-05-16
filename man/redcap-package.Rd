@@ -8,6 +8,14 @@
 \description{
 R utilities for interacting with the REDCap API.
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/epicentre-msf/redcap}
+  \item Report bugs at \url{https://github.com/epicentre-msf/redcap/issues}
+}
+
+}
 \author{
 \strong{Maintainer}: Patrick Barks \email{patrick.barks@epicentre.msf.org}
 
