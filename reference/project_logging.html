@@ -14,7 +14,7 @@ project metadata changes, modification of user rights, etc.'><!-- mathjax --><sc
     
     <a class="navbar-brand me-2" href="../index.html">redcap</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0.9000</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -63,7 +63,8 @@ project metadata changes, modification of user rights, etc.</p>
   user <span class="op">=</span> <span class="cn">NULL</span>,
   record <span class="op">=</span> <span class="cn">NULL</span>,
   time_start <span class="op">=</span> <span class="cn">NULL</span>,
-  time_end <span class="op">=</span> <span class="cn">NULL</span>
+  time_end <span class="op">=</span> <span class="cn">NULL</span>,
+  timestamp_to_posix <span class="op">=</span> <span class="cn">TRUE</span>
 <span class="op">)</span></code></pre></div>
     </div>
 
@@ -94,11 +95,15 @@ relating to all record IDs. Note that, in the current API version (10.8.5),
 it's not possible to pass a character vector with multiple record IDs (i.e.
 one record per request, or NULL for all).</p></dd>
 <dt>time_start</dt>
-<dd><p>Fetch logs from <em>after</em> a given date/time. Use format
+<dd><p>Fetch logs from <em>after</em> a given date-time. Use format
 "YYYY-MM-DD HH:MM". Defaults to NULL to omit a lower time limit.</p></dd>
 <dt>time_end</dt>
-<dd><p>Fetch logs from <em>before</em> a given date/time. Use format
+<dd><p>Fetch logs from <em>before</em> a given date-time. Use format
 "YYYY-MM-DD HH:MM". Defaults to NULL to omit an upper time limit.</p></dd>
+<dt>timestamp_to_posix</dt>
+<dd><p>Logical indicating whether to convert the
+<code>timestamp</code> column to class POSIXct using <code><a href="https://lubridate.tidyverse.org/reference/as_date.html" class="external-link">lubridate::as_datetime</a></code>.
+Defaults to TRUE.</p></dd>
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
