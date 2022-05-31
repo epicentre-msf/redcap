@@ -63,7 +63,9 @@ dictionary</p>
   use_factors <span class="op">=</span> <span class="cn">FALSE</span>,
   value_labs <span class="op">=</span> <span class="cn">TRUE</span>,
   header_labs <span class="op">=</span> <span class="cn">FALSE</span>,
-  times_chron <span class="op">=</span> <span class="cn">TRUE</span>
+  times_chron <span class="op">=</span> <span class="cn">TRUE</span>,
+  fn_dates <span class="op">=</span> <span class="va">parse_date</span>,
+  fn_datetimes <span class="op">=</span> <span class="fu">lubridate</span><span class="fu">::</span><span class="va"><a href="https://lubridate.tidyverse.org/reference/as_date.html" class="external-link">as_datetime</a></span>
 <span class="op">)</span></code></pre></div>
     </div>
 
@@ -91,6 +93,14 @@ return raw variable names.</p></dd>
 <dd><p>Logical indicating whether to reclass time variables using
 <a href="https://rdrr.io/pkg/chron/man/dates.html" class="external-link">chron::times</a> (<code>TRUE</code>) or leave as character hh:mm format (<code>FALSE</code>).
 Defaults to <code>TRUE</code>.</p></dd>
+<dt>fn_dates</dt>
+<dd><p>Function to parse REDCap date variables. Defaults to
+<code>parse_date</code>, an internal wrapper to <code><a href="https://lubridate.tidyverse.org/reference/parse_date_time.html" class="external-link">lubridate::parse_date_time</a></code>. If
+date variables have been converted to numeric (e.g. by writing to Excel),
+set to e.g. <code><a href="https://lubridate.tidyverse.org/reference/as_date.html" class="external-link">lubridate::as_date</a></code> to convert back to dates.</p></dd>
+<dt>fn_datetimes</dt>
+<dd><p>Function to parse REDCap datetime variables. Defaults to
+<code><a href="https://lubridate.tidyverse.org/reference/as_date.html" class="external-link">lubridate::as_datetime</a></code>.</p></dd>
 </dl></div>
 
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>

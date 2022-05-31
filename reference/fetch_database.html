@@ -72,6 +72,7 @@ frames corresponding to each requested form.</p>
   header_labs <span class="op">=</span> <span class="cn">FALSE</span>,
   checkbox_labs <span class="op">=</span> <span class="cn">FALSE</span>,
   use_factors <span class="op">=</span> <span class="cn">FALSE</span>,
+  times_chron <span class="op">=</span> <span class="cn">TRUE</span>,
   na <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">""</span>, <span class="st">"NA"</span><span class="op">)</span>,
   dag <span class="op">=</span> <span class="cn">TRUE</span>,
   double_resolve <span class="op">=</span> <span class="cn">FALSE</span>,
@@ -133,6 +134,10 @@ always be exported as raw values (usually "0"/"1").</p></dd>
 levels can either be raw values (e.g. "0"/"1") or labels (e.g. "No"/"Yes")
 depending on arguments <code>value_labs</code> and <code>checkbox_labs</code>. Defaults to
 <code>FALSE</code>.</p></dd>
+<dt>times_chron</dt>
+<dd><p>Logical indicating whether to reclass time variables using
+<a href="https://rdrr.io/pkg/chron/man/dates.html" class="external-link">chron::times</a> (<code>TRUE</code>) or leave as character hh:mm format (<code>FALSE</code>).
+Defaults to <code>TRUE</code>.</p></dd>
 <dt>na</dt>
 <dd><p>Character vector of strings to interpret as missing values. Passed
 to <a href="https://readr.tidyverse.org/reference/read_delim.html" class="external-link">readr::read_csv</a>. Defaults to <code>c("", "NA")</code>.</p></dd>
