@@ -5,9 +5,12 @@
 #'
 #' @param x A data frame representing a REDCap form
 #' @param dict A metadata dictionary
-#' @param times_chron Logical indicating whether to reclass time variables using
-#'   [chron::times] (`TRUE`) or leave as character hh:mm format (`FALSE`).
-#'   Defaults to `TRUE`.
+#' @param fn_dates Function to parse REDCap date variables. Defaults to
+#'   `parse_date`, an internal wrapper to [`lubridate::parse_date_time`]. If
+#'   date variables have been converted to numeric (e.g. by writing to Excel),
+#'   set to e.g. [`lubridate::as_date`] to convert back to dates.
+#' @param fn_datetimes Function to parse REDCap datetime variables. Defaults to
+#'   [`lubridate::as_datetime`].
 #'
 #' @importFrom lubridate as_datetime
 #' @export reclass
@@ -16,7 +19,12 @@ reclass <- function(x,
                     use_factors = FALSE,
                     value_labs = TRUE,
                     header_labs = FALSE,
-                    times_chron = TRUE) {
+                    times_chron = TRUE,
+                    fn_dates = parse_date,
+                    fn_datetimes = lubridate::as_datetime) {
+
+  fn_dates <- match.fun(fn_dates)
+  fn_datetimes <- match.fun(fn_datetimes)
 
   # which dictionary column corresponds to colnames of x?
   col_field <- ifelse(header_labs, "field_label", "field_name")
@@ -32,19 +40,16 @@ reclass <- function(x,
 
   # date variables
   cols_date <- dict_foc[[col_field]][grepl("date_", dict_foc$validation)]
-  x <- cols_reclass(x, cols_date, parse_date)
+  x <- cols_reclass(x, cols_date, fn_dates)
 
   # datetime variables
   cols_datetime <- dict_foc[[col_field]][grepl("datetime_", dict_foc$validation)]
-  x <- cols_reclass(x, cols_datetime, lubridate::as_datetime)
+  x <- cols_reclass(x, cols_datetime, fn_datetimes)
 
   # time variables
   cols_time <- dict_foc[[col_field]][grepl("^time$", dict_foc$validation)]
-  if (times_chron) {
-    x <- cols_reclass(x, cols_time, parse_redcap_time)
-  } else {
-    x <- cols_reclass(x, cols_time, prep_redcap_time)
-  }
+  x <- cols_reclass(x, cols_time, parse_redcap_time)
+  if (!times_chron) x <- cols_reclass(x, cols_time, prep_redcap_time)
 
   # repeat instrument column to character
   cols_instrument <- ifelse(header_labs, "Repeat Instrument", "redcap_repeat_instrument")

@@ -11,7 +11,9 @@ reclass(
   use_factors = FALSE,
   value_labs = TRUE,
   header_labs = FALSE,
-  times_chron = TRUE
+  times_chron = TRUE,
+  fn_dates = parse_date,
+  fn_datetimes = lubridate::as_datetime
 )
 }
 \arguments{
@@ -36,6 +38,14 @@ return raw variable names.}
 \item{times_chron}{Logical indicating whether to reclass time variables using
 \link[chron:dates]{chron::times} (\code{TRUE}) or leave as character hh:mm format (\code{FALSE}).
 Defaults to \code{TRUE}.}
+
+\item{fn_dates}{Function to parse REDCap date variables. Defaults to
+\code{parse_date}, an internal wrapper to \code{\link[lubridate:parse_date_time]{lubridate::parse_date_time}}. If
+date variables have been converted to numeric (e.g. by writing to Excel),
+set to e.g. \code{\link[lubridate:as_date]{lubridate::as_date}} to convert back to dates.}
+
+\item{fn_datetimes}{Function to parse REDCap datetime variables. Defaults to
+\code{\link[lubridate:as_date]{lubridate::as_datetime}}.}
 }
 \description{
 Reclass columns of a data frame to match classes specified in a metadata
