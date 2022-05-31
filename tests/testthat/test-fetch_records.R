@@ -2,7 +2,7 @@ context("fetch_records")
 
 test_that("fetch_records works as expected", {
 
-  # skip_if(conn_test$token == "")
+  skip_if(conn_test$token == "")
 
   ## specify subsets to fetch
   form_focal <- "followup"
@@ -23,6 +23,7 @@ test_that("fetch_records works as expected", {
     header_labs = FALSE,
     checkbox_labs = FALSE,
     use_factors = FALSE,
+    times_chron = FALSE,
     dag = FALSE,
     double_resolve = FALSE
   )
@@ -30,6 +31,7 @@ test_that("fetch_records works as expected", {
   expect_is(x1, "tbl_df")
   expect_is(x1$follow_form_dt, "POSIXct")
   expect_is(x1$follow_date, "Date")
+  expect_is(x1$follow_time, "character")
   expect_is(x1$follow_visit_type, "character")
   expect_true(!"record_id" %in% names(x1))
   expect_true(all(dict$field_name %in% names(x1)))
@@ -48,10 +50,12 @@ test_that("fetch_records works as expected", {
     header_labs = FALSE,
     checkbox_labs = TRUE,
     use_factors = TRUE,
+    times_chron = TRUE,
     dag = TRUE
   )
 
   expect_equal(nrow(x1), nrow(x2))
+  expect_is(x2$follow_time, "times")
   expect_is(x2$follow_visit_type, "factor")
   expect_true(all(x2$redcap_event_name %in% "Unscheduled Followup"))
   expect_true(all(dict$field_name %in% names(x2)))

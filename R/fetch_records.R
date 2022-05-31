@@ -49,6 +49,9 @@
 #'   levels can either be raw values (e.g. "0"/"1") or labels (e.g. "No"/"Yes")
 #'   depending on arguments `value_labs` and `checkbox_labs`. Defaults to
 #'   `FALSE`.
+#' @param times_chron Logical indicating whether to reclass time variables using
+#'   [chron::times] (`TRUE`) or leave as character hh:mm format (`FALSE`).
+#'   Defaults to `TRUE`.
 #' @param na Character vector of strings to interpret as missing values. Passed
 #'   to [readr::read_csv]. Defaults to `c("", "NA")`.
 #' @param dag Logical indicating whether to export the
@@ -119,6 +122,7 @@ fetch_records <- function(conn,
                           header_labs = FALSE,
                           checkbox_labs = FALSE,
                           use_factors = FALSE,
+                          times_chron = TRUE,
                           na = c("", "NA"),
                           dag = TRUE,
                           double_resolve = FALSE,
@@ -149,6 +153,7 @@ fetch_records <- function(conn,
     header_labs = header_labs,
     checkbox_labs = checkbox_labs,
     use_factors = use_factors,
+    times_chron = times_chron,
     na = na,
     dag = dag,
     double_resolve = double_resolve,
@@ -176,6 +181,7 @@ fetch_records_ <- function(conn,
                            header_labs,
                            checkbox_labs,
                            use_factors,
+                           times_chron,
                            na,
                            dag,
                            double_resolve,
@@ -354,7 +360,14 @@ fetch_records_ <- function(conn,
   }
 
   ## reclass columns and return ------------------------------------------------
-  reclass(out, m_dict, use_factors, value_labs, header_labs)
+  reclass(
+    out,
+    dict = m_dict,
+    use_factors = use_factors,
+    value_labs = value_labs,
+    header_labs = header_labs,
+    times_chron = times_chron
+  )
 }
 
 

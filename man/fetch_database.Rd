@@ -17,6 +17,7 @@ fetch_database(
   header_labs = FALSE,
   checkbox_labs = FALSE,
   use_factors = FALSE,
+  times_chron = TRUE,
   na = c("", "NA"),
   dag = TRUE,
   double_resolve = FALSE,
@@ -76,6 +77,10 @@ always be exported as raw values (usually "0"/"1").}
 levels can either be raw values (e.g. "0"/"1") or labels (e.g. "No"/"Yes")
 depending on arguments \code{value_labs} and \code{checkbox_labs}. Defaults to
 \code{FALSE}.}
+
+\item{times_chron}{Logical indicating whether to reclass time variables using
+\link[chron:dates]{chron::times} (\code{TRUE}) or leave as character hh:mm format (\code{FALSE}).
+Defaults to \code{TRUE}.}
 
 \item{na}{Character vector of strings to interpret as missing values. Passed
 to \link[readr:read_delim]{readr::read_csv}. Defaults to \code{c("", "NA")}.}
