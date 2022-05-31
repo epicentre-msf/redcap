@@ -100,10 +100,10 @@
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/epicentre-msf/redcap" class="external-link">redcap</a></span><span class="op">)</span>
 
-<span class="co">### create an API connection</span>
+<span class="co">### create an API connection (this project just used for testing)</span>
 <span class="va">conn</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/rconn.html">rconn</a></span><span class="op">(</span>
-  url <span class="op">=</span> <span class="st">"https://www.research.epicentre.msf.org/api/"</span>,
-  token <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"REDCAP_PKG"</span><span class="op">)</span> <span class="co"># this project just used for testing</span>
+  url <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"REDCAP_API_URL"</span><span class="op">)</span>,
+  token <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"REDCAP_PKG"</span><span class="op">)</span>
 <span class="op">)</span>
 
 <span class="co">### fetch REDCap version number</span>
