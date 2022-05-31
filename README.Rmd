@@ -58,10 +58,10 @@ remotes::install_github("epicentre-msf/redcap")
 ```{r}
 library(redcap)
 
-### create an API connection
+### create an API connection (this project just used for testing)
 conn <- rconn(
-  url = "https://www.research.epicentre.msf.org/api/",
-  token = Sys.getenv("REDCAP_PKG") # this project just used for testing
+  url = Sys.getenv("REDCAP_API_URL"),
+  token = Sys.getenv("REDCAP_PKG")
 )
 
 ### fetch REDCap version number
