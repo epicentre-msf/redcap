@@ -15,7 +15,9 @@ jobs:
     runs-on: macOS-latest
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
-      REDCAP_PKG: ${{ secrets.REDCAP_PKG }}
+      REDCAP_API_URL: ${{ secrets.REDCAP_API_URL }}
+      REDCAP_LASV_BEN: ${{ secrets.REDCAP_LASV_BEN }}
+      REDCAP_LASV_GUI: ${{ secrets.REDCAP_LASV_GUI }}
     steps:
       - uses: actions/checkout@v2
       - uses: r-lib/actions/setup-r@v1
