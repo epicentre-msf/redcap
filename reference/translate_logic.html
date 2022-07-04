@@ -68,78 +68,97 @@ Translation stepExample expression
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">translate_logic</span><span class="op">(</span>
-  <span class="va">x</span>,
-  use_value_labs <span class="op">=</span> <span class="cn">TRUE</span>,
-  use_header_labs <span class="op">=</span> <span class="cn">FALSE</span>,
-  use_is_na <span class="op">=</span> <span class="cn">TRUE</span>,
-  use_in <span class="op">=</span> <span class="cn">TRUE</span>,
-  drop_redundant <span class="op">=</span> <span class="cn">FALSE</span>,
-  meta_factors <span class="op">=</span> <span class="cn">NULL</span>,
-  meta_dictionary <span class="op">=</span> <span class="cn">NULL</span>,
-  on_error <span class="op">=</span> <span class="st">"warn"</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">translate_logic</span><span class="op">(</span></span>
+<span>  <span class="va">x</span>,</span>
+<span>  use_value_labs <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  use_header_labs <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  use_is_na <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  use_in <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  drop_redundant <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  meta_factors <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  meta_dictionary <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  on_error <span class="op">=</span> <span class="st">"warn"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>x</dt>
 <dd><p>A character vector of REDCap branching logic statements</p></dd>
+
+
 <dt>use_value_labs</dt>
 <dd><p>Logical indicating whether to replace factor option
 values with labels (based on the mapping defined in <code>meta_factors</code>).
 E.g.:<br><code>y == '1'</code> becomes <code>y == 'Yes'</code></p></dd>
+
+
 <dt>use_header_labs</dt>
 <dd><p>Logical indicating whether to use labels instead of
 variable names as column names (based on the mapping defined in
 <code>meta_dictionary</code>).
 E.g.:<br><code>age &gt;= 18</code> becomes <code>"Participant's age" &gt;= 18</code></p></dd>
+
+
 <dt>use_is_na</dt>
 <dd><p>Logical indicating whether to replace REDCap-style tests for
 missingness with <code><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></code>. E.g.:<br><code>y == ""</code> becomes <code>is.na(y)</code><br><code>y != ""</code> becomes <code>!is.na(y)</code></p></dd>
+
+
 <dt>use_in</dt>
 <dd><p>Logical indicating whether to replace instances of <code><a href="https://rdrr.io/r/base/Comparison.html" class="external-link">==</a></code> and
 <code><a href="https://rdrr.io/r/base/Comparison.html" class="external-link">!=</a></code> associated with factor-type variables (as defined in <code>meta_factors</code>)
 with <code><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></code>. E.g.:<br><code>y == 'Yes'</code> becomes <code>y %in% 'Yes'</code><br><code>y != 'Yes'</code> becomes <code>!y %in% 'Yes'</code></p></dd>
+
+
 <dt>drop_redundant</dt>
 <dd><p>Logical indicating whether to simplify expressions by
 removing redundant components from expressions that test both for equality
 and inequality with the same variable. E.g.:<br><code>var == "X" &amp; var != ""</code> becomes <code>var == "X"</code></p></dd>
+
+
 <dt>meta_factors</dt>
 <dd><p>A data frame containing variable names (column
 <code>field_name</code>) and corresponding values (column <code>value</code>) and labels (column
 <code>label</code>) for factor-type variables. Fetch with <code><a href="meta_factors.html">meta_factors</a></code>. Only
 needed if either <code>use_value_labs</code> or <code>use_in</code> are <code>TRUE</code>.</p></dd>
+
+
 <dt>meta_dictionary</dt>
 <dd><p>A data frame containing variable names (column
 <code>field_name</code>) and labels (column <code>field_label</code>). Fetch with
 <code><a href="meta_dictionary.html">meta_dictionary</a></code>. Only needed if <code>use_header_labs</code> is <code>TRUE</code>.</p></dd>
+
+
 <dt>on_error</dt>
 <dd><p>What to do if one or more elements of statements can't be
 translated into valid R expressions? Options are "ignore" (return <code>NA</code> for
 relevant elements), "warn" (return <code>NA</code> for relevant elements and give
 warning), or "fail" (throw error). Defaults to "warn".</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A character vector of R-style expressions</p>
+    
+
+<p>A character vector of R-style expressions</p>
     </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="co"># normally would fetch factor metadata with redcap::meta_factors(), but here</span></span>
-<span class="r-in"><span class="co"># we'll create a simple example by hand</span></span>
-<span class="r-in"><span class="va">df_factors</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
-<span class="r-in">  field_name <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"head_household"</span>, <span class="st">"head_household"</span><span class="op">)</span>,</span>
-<span class="r-in">  value <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"0"</span>, <span class="st">"1"</span><span class="op">)</span>,</span>
-<span class="r-in">  label <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"No"</span>, <span class="st">"Yes"</span><span class="op">)</span>,</span>
-<span class="r-in">  stringsAsFactors <span class="op">=</span> <span class="cn">FALSE</span></span>
-<span class="r-in"><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="va">redcap_logic</span> <span class="op">&lt;-</span> <span class="st">"head_household=1 and age&lt;&gt;\"\""</span></span>
-<span class="r-in"><span class="fu">translate_logic</span><span class="op">(</span><span class="va">redcap_logic</span>, meta_factors <span class="op">=</span> <span class="va">df_factors</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># normally would fetch factor metadata with redcap::meta_factors(), but here</span></span></span>
+<span class="r-in"><span><span class="co"># we'll create a simple example by hand</span></span></span>
+<span class="r-in"><span><span class="va">df_factors</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  field_name <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"head_household"</span>, <span class="st">"head_household"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  value <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"0"</span>, <span class="st">"1"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  label <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"No"</span>, <span class="st">"Yes"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  stringsAsFactors <span class="op">=</span> <span class="cn">FALSE</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">redcap_logic</span> <span class="op">&lt;-</span> <span class="st">"head_household=1 and age&lt;&gt;\"\""</span></span></span>
+<span class="r-in"><span><span class="fu">translate_logic</span><span class="op">(</span><span class="va">redcap_logic</span>, meta_factors <span class="op">=</span> <span class="va">df_factors</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "head_household %in% \"Yes\" &amp; !is.na(age)"</span>
-<span class="r-in"></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
@@ -151,7 +170,7 @@ warning), or "fail" (throw error). Defaults to "warn".</p></dd>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.5.</p>
 </div>
 
     </footer></div>

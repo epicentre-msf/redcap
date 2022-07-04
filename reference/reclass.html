@@ -57,50 +57,65 @@ dictionary</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">reclass</span><span class="op">(</span>
-  <span class="va">x</span>,
-  <span class="va">dict</span>,
-  use_factors <span class="op">=</span> <span class="cn">FALSE</span>,
-  value_labs <span class="op">=</span> <span class="cn">TRUE</span>,
-  header_labs <span class="op">=</span> <span class="cn">FALSE</span>,
-  times_chron <span class="op">=</span> <span class="cn">TRUE</span>,
-  fn_dates <span class="op">=</span> <span class="va">parse_date</span>,
-  fn_datetimes <span class="op">=</span> <span class="fu">lubridate</span><span class="fu">::</span><span class="va"><a href="https://lubridate.tidyverse.org/reference/as_date.html" class="external-link">as_datetime</a></span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">reclass</span><span class="op">(</span></span>
+<span>  <span class="va">x</span>,</span>
+<span>  <span class="va">dict</span>,</span>
+<span>  use_factors <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  value_labs <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  header_labs <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  times_chron <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  fn_dates <span class="op">=</span> <span class="va">parse_date</span>,</span>
+<span>  fn_datetimes <span class="op">=</span> <span class="fu">lubridate</span><span class="fu">::</span><span class="va"><a href="https://lubridate.tidyverse.org/reference/as_date.html" class="external-link">as_datetime</a></span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>x</dt>
 <dd><p>A data frame representing a REDCap form</p></dd>
+
+
 <dt>dict</dt>
 <dd><p>A metadata dictionary</p></dd>
+
+
 <dt>use_factors</dt>
 <dd><p>Logical indicating whether categorical REDCap variables
 (radio, dropdown, yesno, checkbox) should be returned as factors. Factor
 levels can either be raw values (e.g. "0"/"1") or labels (e.g. "No"/"Yes")
 depending on arguments <code>value_labs</code> and <code>checkbox_labs</code>. Defaults to
 <code>FALSE</code>.</p></dd>
+
+
 <dt>value_labs</dt>
 <dd><p>Logical indicating whether to return value labels (<code>TRUE</code>)
 or raw values (<code>FALSE</code>) for categorical REDCap variables (radio, dropdown,
 yesno, checkbox). Defaults to <code>TRUE</code> to return labels.</p></dd>
+
+
 <dt>header_labs</dt>
 <dd><p>Logical indicating whether to export column names as
 labels (<code>TRUE</code>) or raw variable names (<code>FALSE</code>). Defaults to <code>FALSE</code> to
 return raw variable names.</p></dd>
+
+
 <dt>times_chron</dt>
 <dd><p>Logical indicating whether to reclass time variables using
 <a href="https://rdrr.io/pkg/chron/man/dates.html" class="external-link">chron::times</a> (<code>TRUE</code>) or leave as character hh:mm format (<code>FALSE</code>).
 Defaults to <code>TRUE</code>.</p></dd>
+
+
 <dt>fn_dates</dt>
 <dd><p>Function to parse REDCap date variables. Defaults to
 <code>parse_date</code>, an internal wrapper to <code><a href="https://lubridate.tidyverse.org/reference/parse_date_time.html" class="external-link">lubridate::parse_date_time</a></code>. If
 date variables have been converted to numeric (e.g. by writing to Excel),
 set to e.g. <code><a href="https://lubridate.tidyverse.org/reference/as_date.html" class="external-link">lubridate::as_date</a></code> to convert back to dates.</p></dd>
+
+
 <dt>fn_datetimes</dt>
 <dd><p>Function to parse REDCap datetime variables. Defaults to
 <code><a href="https://lubridate.tidyverse.org/reference/as_date.html" class="external-link">lubridate::as_datetime</a></code>.</p></dd>
+
 </dl></div>
 
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
@@ -112,7 +127,7 @@ set to e.g. <code><a href="https://lubridate.tidyverse.org/reference/as_date.htm
 </div>
 
 <div class="pkgdown-footer-right">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.5.</p>
 </div>
 
     </footer></div>

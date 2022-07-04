@@ -57,66 +57,87 @@ project.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">project_xml</span><span class="op">(</span>
-  <span class="va">conn</span>,
-  meta_only <span class="op">=</span> <span class="cn">FALSE</span>,
-  records <span class="op">=</span> <span class="cn">NULL</span>,
-  fields <span class="op">=</span> <span class="cn">NULL</span>,
-  events <span class="op">=</span> <span class="cn">NULL</span>,
-  filter_logic <span class="op">=</span> <span class="cn">NULL</span>,
-  export_dag <span class="op">=</span> <span class="cn">FALSE</span>,
-  export_survey <span class="op">=</span> <span class="cn">FALSE</span>,
-  export_files <span class="op">=</span> <span class="cn">FALSE</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">project_xml</span><span class="op">(</span></span>
+<span>  <span class="va">conn</span>,</span>
+<span>  meta_only <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  records <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  fields <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  events <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  filter_logic <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  export_dag <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  export_survey <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  export_files <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>conn</dt>
 <dd><p>A REDCap API connection object (created with <code><a href="rconn.html">rconn</a></code>)</p></dd>
+
+
 <dt>meta_only</dt>
 <dd><p>Logical indicating whether to fetch only the project
 metadata (if <code>TRUE</code>) or both the metadata and data records (if <code>FALSE</code>).
 Defaults to <code>FALSE</code> to fetch both metadata and data.</p></dd>
+
+
 <dt>records</dt>
 <dd><p>Optional character vector of specific record IDs to fetch
 record data for. Only used when <code>meta_only = FALSE</code>.</p></dd>
+
+
 <dt>fields</dt>
 <dd><p>Optional character vector of specific fields to fetch record
 data for. Only used when <code>meta_only = FALSE</code>.</p></dd>
+
+
 <dt>events</dt>
 <dd><p>Optional character vector of specific events to fetch record
 data for. Only used when <code>meta_only = FALSE</code>.</p></dd>
+
+
 <dt>filter_logic</dt>
 <dd><p>Optional character string containing a REDCap-style
 expression used to filter records returned by the API (e.g. "[age] &gt; 30")</p></dd>
+
+
 <dt>export_dag</dt>
 <dd><p>Logical indicating whether to export the
 redcap_data_access_group field. Defaults to <code>FALSE</code>.</p></dd>
+
+
 <dt>export_survey</dt>
 <dd><p>Logical indicating whether to export survey identifier
 or timestamp fields, if surveys are used in the project. Defaults to
 <code>FALSE</code>.</p></dd>
+
+
 <dt>export_files</dt>
 <dd><p>Logical indicating whether to export uploaded files. Note
 this may lead to large exports. Defaults to <code>FALSE</code>.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>An object of class <code>xml_document</code></p>
+    
+
+<p>An object of class <code>xml_document</code></p>
+
+
     </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in"><span class="va">conn</span> <span class="op">&lt;-</span> <span class="fu"><a href="rconn.html">rconn</a></span><span class="op">(</span></span>
-<span class="r-in">  url <span class="op">=</span> <span class="st">"https://redcap.msf.fr/api/"</span>,</span>
-<span class="r-in">  token <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"MY_REDCAP_TOKEN"</span><span class="op">)</span></span>
-<span class="r-in"><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="fu">project_xml</span><span class="op">(</span><span class="va">conn</span><span class="op">)</span></span>
-<span class="r-in"><span class="op">}</span></span>
-<span class="r-in"></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span><span class="va">conn</span> <span class="op">&lt;-</span> <span class="fu"><a href="rconn.html">rconn</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  url <span class="op">=</span> <span class="st">"https://redcap.msf.fr/api/"</span>,</span></span>
+<span class="r-in"><span>  token <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"MY_REDCAP_TOKEN"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu">project_xml</span><span class="op">(</span><span class="va">conn</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
@@ -128,7 +149,7 @@ this may lead to large exports. Defaults to <code>FALSE</code>.</p></dd>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.5.</p>
 </div>
 
     </footer></div>

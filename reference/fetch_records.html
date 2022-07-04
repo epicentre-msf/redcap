@@ -57,50 +57,62 @@ more REDCap instruments.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">fetch_records</span><span class="op">(</span>
-  <span class="va">conn</span>,
-  forms <span class="op">=</span> <span class="cn">NULL</span>,
-  events <span class="op">=</span> <span class="cn">NULL</span>,
-  records <span class="op">=</span> <span class="cn">NULL</span>,
-  records_omit <span class="op">=</span> <span class="cn">NULL</span>,
-  fields <span class="op">=</span> <span class="cn">NULL</span>,
-  id_field <span class="op">=</span> <span class="cn">TRUE</span>,
-  rm_empty <span class="op">=</span> <span class="cn">TRUE</span>,
-  value_labs <span class="op">=</span> <span class="cn">TRUE</span>,
-  header_labs <span class="op">=</span> <span class="cn">FALSE</span>,
-  checkbox_labs <span class="op">=</span> <span class="cn">FALSE</span>,
-  use_factors <span class="op">=</span> <span class="cn">FALSE</span>,
-  times_chron <span class="op">=</span> <span class="cn">TRUE</span>,
-  na <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">""</span>, <span class="st">"NA"</span><span class="op">)</span>,
-  dag <span class="op">=</span> <span class="cn">TRUE</span>,
-  double_resolve <span class="op">=</span> <span class="cn">FALSE</span>,
-  double_sep <span class="op">=</span> <span class="st">"--"</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">fetch_records</span><span class="op">(</span></span>
+<span>  <span class="va">conn</span>,</span>
+<span>  forms <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  events <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  records <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  records_omit <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  fields <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  id_field <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  rm_empty <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  value_labs <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  header_labs <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  checkbox_labs <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  use_factors <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  times_chron <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  na <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">""</span>, <span class="st">"NA"</span><span class="op">)</span>,</span>
+<span>  dag <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  double_resolve <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  double_sep <span class="op">=</span> <span class="st">"--"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>conn</dt>
 <dd><p>A REDCap API connection object (created with <code><a href="rconn.html">rconn</a></code>)</p></dd>
+
+
 <dt>forms</dt>
 <dd><p>Character vector of forms (i.e. instruments) to fetch data for.
 Set to <code>NULL</code> (the default) to fetch all forms in the project.</p></dd>
+
+
 <dt>events</dt>
 <dd><p>Character vector of events to fetch. Must correspond to the
 selected <code>forms</code>. Set to <code>NULL</code> (the default) to fetch all events
 corresponding to the selected form(s).</p></dd>
+
+
 <dt>records</dt>
 <dd><p>Character vector of record IDs to fetch. Set to <code>NULL</code> (the
 default) to fetch all record IDs corresponding to the selected form(s).</p></dd>
+
+
 <dt>records_omit</dt>
 <dd><p>Character vector of record IDs to ignore. Set to <code>NULL</code>
 (the default) to <em>not</em> ignore any records. If a given record ID appears in
 both argument <code>records</code> and <code>records_omit</code>, argument <code>records_omit</code> takes
 precedence and that record will not be returned.</p></dd>
+
+
 <dt>fields</dt>
 <dd><p>Character vector of fields (i.e. variables) to fetch. Set to
 <code>NULL</code> (the default) to fetch all fields corresponding to the selected
 form(s).</p></dd>
+
+
 <dt>id_field</dt>
 <dd><p>Logical indicating whether to always include the 'record ID'
 field (defined in REDCap to be the first variable in the project codebook)
@@ -111,41 +123,59 @@ and so API requests for other forms will not include the record ID field by
 default (unless it's explicitly requested with argument <code>fields</code>). The
 <code>id_field</code> argument is a shortcut to avoid having to always explicitly
 request the record ID field.</p></dd>
+
+
 <dt>rm_empty</dt>
 <dd><p>Logical indicating whether to remove rows for which all
 fields from the relevant form(s) are missing. See section <strong>Removing empty
 rows</strong>. Defaults to <code>TRUE</code>.</p></dd>
+
+
 <dt>value_labs</dt>
 <dd><p>Logical indicating whether to return value labels (<code>TRUE</code>)
 or raw values (<code>FALSE</code>) for categorical REDCap variables (radio, dropdown,
 yesno, checkbox). Defaults to <code>TRUE</code> to return labels.</p></dd>
+
+
 <dt>header_labs</dt>
 <dd><p>Logical indicating whether to export column names as
 labels (<code>TRUE</code>) or raw variable names (<code>FALSE</code>). Defaults to <code>FALSE</code> to
 return raw variable names.</p></dd>
+
+
 <dt>checkbox_labs</dt>
 <dd><p>Logical indicating whether to export checkbox labels
 (<code>TRUE</code>) or statuses (i.e. "Unchecked" or "Checked") (<code>FALSE</code>). Defaults to
 <code>FALSE</code> to export statuses. Note this argument is only relevant when
 <code>value_labs</code> is <code>TRUE</code> — if <code>value_labs</code> is <code>FALSE</code> checkbox variables will
 always be exported as raw values (usually "0"/"1").</p></dd>
+
+
 <dt>use_factors</dt>
 <dd><p>Logical indicating whether categorical REDCap variables
 (radio, dropdown, yesno, checkbox) should be returned as factors. Factor
 levels can either be raw values (e.g. "0"/"1") or labels (e.g. "No"/"Yes")
 depending on arguments <code>value_labs</code> and <code>checkbox_labs</code>. Defaults to
 <code>FALSE</code>.</p></dd>
+
+
 <dt>times_chron</dt>
 <dd><p>Logical indicating whether to reclass time variables using
 <a href="https://rdrr.io/pkg/chron/man/dates.html" class="external-link">chron::times</a> (<code>TRUE</code>) or leave as character hh:mm format (<code>FALSE</code>).
 Defaults to <code>TRUE</code>.</p></dd>
+
+
 <dt>na</dt>
 <dd><p>Character vector of strings to interpret as missing values. Passed
 to <a href="https://readr.tidyverse.org/reference/read_delim.html" class="external-link">readr::read_csv</a>. Defaults to <code>c("", "NA")</code>.</p></dd>
+
+
 <dt>dag</dt>
 <dd><p>Logical indicating whether to export the
 <code>redcap_data_access_group</code> field (if used in the project). Defaults to
 <code>TRUE</code>.</p></dd>
+
+
 <dt>double_resolve</dt>
 <dd><p>Logical indicating whether to resolve double-entries
 (i.e. records entered in duplicate using REDCap's Double Data Entry
@@ -163,14 +193,19 @@ the entry number portion), and any of the following columns when present
 (accounting for argument <code>header_labs</code>): redcap_event_name (Redcap Event),
 redcap_repeat_instrument (Repeat Instrument), redcap_repeat_instance
 (Repeat Instance).</p></dd>
+
+
 <dt>double_sep</dt>
 <dd><p>If <code>double_resolve</code> is <code>TRUE</code>, the string separator used to
 split the record ID field into the record ID and entry number. Defaults to
 "--".</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A <code><a href="https://tibble.tidyverse.org/reference/tbl_df-class.html" class="external-link">tibble</a></code>-style data frame containing the requested
+    
+
+<p>A <code><a href="https://tibble.tidyverse.org/reference/tbl_df-class.html" class="external-link">tibble</a></code>-style data frame containing the requested
 records</p>
     </div>
     <div class="section level2">
@@ -194,15 +229,15 @@ to "Unchecked" in an empty form (rather than missing per se).</p>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in"><span class="va">conn</span> <span class="op">&lt;-</span> <span class="fu"><a href="rconn.html">rconn</a></span><span class="op">(</span></span>
-<span class="r-in">  url <span class="op">=</span> <span class="st">"https://redcap.msf.fr/api/"</span>,</span>
-<span class="r-in">  token <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"MY_REDCAP_TOKEN"</span><span class="op">)</span></span>
-<span class="r-in"><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="fu">fetch_records</span><span class="op">(</span><span class="va">conn</span>, forms <span class="op">=</span> <span class="st">"my_form"</span><span class="op">)</span></span>
-<span class="r-in"><span class="op">}</span></span>
-<span class="r-in"></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span><span class="va">conn</span> <span class="op">&lt;-</span> <span class="fu"><a href="rconn.html">rconn</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  url <span class="op">=</span> <span class="st">"https://redcap.msf.fr/api/"</span>,</span></span>
+<span class="r-in"><span>  token <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"MY_REDCAP_TOKEN"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu">fetch_records</span><span class="op">(</span><span class="va">conn</span>, forms <span class="op">=</span> <span class="st">"my_form"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
@@ -214,7 +249,7 @@ to "Unchecked" in an empty form (rather than missing per se).</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.5.</p>
 </div>
 
     </footer></div>

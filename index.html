@@ -91,63 +91,63 @@
 </h3>
 <p>Install from GitHub with:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># install.packages("remotes")</span>
-<span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"epicentre-msf/redcap"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># install.packages("remotes")</span></span>
+<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"epicentre-msf/redcap"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="example-usage">Example usage<a class="anchor" aria-label="anchor" href="#example-usage"></a>
 </h3>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/epicentre-msf/redcap" class="external-link">redcap</a></span><span class="op">)</span>
-
-<span class="co">### create an API connection (this project just used for testing)</span>
-<span class="va">conn</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/rconn.html">rconn</a></span><span class="op">(</span>
-  url <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"REDCAP_API_URL"</span><span class="op">)</span>,
-  token <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"REDCAP_PKG"</span><span class="op">)</span>
-<span class="op">)</span>
-
-<span class="co">### fetch REDCap version number</span>
-<span class="fu"><a href="reference/redcap_version.html">redcap_version</a></span><span class="op">(</span><span class="va">conn</span><span class="op">)</span>
-<span class="co">#&gt; [1] "10.8.5"</span>
-
-<span class="co">### fetch metadata tables</span>
-<span class="va">df_dictionary</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/meta_dictionary.html">meta_dictionary</a></span><span class="op">(</span><span class="va">conn</span><span class="op">)</span>
-<span class="va">df_fields</span>     <span class="op">&lt;-</span> <span class="fu"><a href="reference/meta_fields.html">meta_fields</a></span><span class="op">(</span><span class="va">conn</span><span class="op">)</span>
-<span class="va">df_forms</span>      <span class="op">&lt;-</span> <span class="fu"><a href="reference/meta_forms.html">meta_forms</a></span><span class="op">(</span><span class="va">conn</span><span class="op">)</span>
-<span class="va">df_arms</span>       <span class="op">&lt;-</span> <span class="fu"><a href="reference/meta_arms.html">meta_arms</a></span><span class="op">(</span><span class="va">conn</span><span class="op">)</span>
-<span class="va">df_events</span>     <span class="op">&lt;-</span> <span class="fu"><a href="reference/meta_events.html">meta_events</a></span><span class="op">(</span><span class="va">conn</span><span class="op">)</span>
-<span class="va">df_mapping</span>    <span class="op">&lt;-</span> <span class="fu"><a href="reference/meta_mapping.html">meta_mapping</a></span><span class="op">(</span><span class="va">conn</span><span class="op">)</span>
-<span class="va">df_repeating</span>  <span class="op">&lt;-</span> <span class="fu"><a href="reference/meta_repeating.html">meta_repeating</a></span><span class="op">(</span><span class="va">conn</span><span class="op">)</span>
-
-<span class="co">### fetch records (generally from a single form)</span>
-<span class="va">df_records</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fetch_records.html">fetch_records</a></span><span class="op">(</span><span class="va">conn</span>, forms <span class="op">=</span> <span class="st">"eligibility"</span><span class="op">)</span>
-
-<span class="co">### fetch records from all forms (as a list of data frames, one per form)</span>
-<span class="va">db_records</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fetch_database.html">fetch_database</a></span><span class="op">(</span><span class="va">conn</span><span class="op">)</span>
-
-<span class="co">### project/user info</span>
-<span class="va">df_info</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/project_info.html">project_info</a></span><span class="op">(</span><span class="va">conn</span><span class="op">)</span>
-<span class="va">df_users</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/project_users.html">project_users</a></span><span class="op">(</span><span class="va">conn</span><span class="op">)</span>
-<span class="va">df_dags</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/project_dags.html">project_dags</a></span><span class="op">(</span><span class="va">conn</span><span class="op">)</span>
-<span class="va">df_users_dags</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/project_users_dags.html">project_users_dags</a></span><span class="op">(</span><span class="va">conn</span><span class="op">)</span>
-
-<span class="co">### project backup/logging</span>
-<span class="va">backup_xml</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/project_xml.html">project_xml</a></span><span class="op">(</span><span class="va">conn</span><span class="op">)</span>
-<span class="va">backup_logs</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/project_logging.html">project_logging</a></span><span class="op">(</span><span class="va">conn</span><span class="op">)</span>
-
-<span class="co">### generate queries based on branching logic in project codebook</span>
-<span class="va">df_queries</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/generate_queries.html">generate_queries</a></span><span class="op">(</span><span class="va">conn</span><span class="op">)</span>
-
-<span class="co"># run queries using the queryr package</span>
-<span class="va">queries_out</span> <span class="op">&lt;-</span> <span class="fu">queryr</span><span class="fu">::</span><span class="fu">query_vec</span><span class="op">(</span>
-  x <span class="op">=</span> <span class="va">db_records</span>,                 <span class="co"># REDCap database as list of data frames</span>
-  cond <span class="op">=</span> <span class="va">df_queries</span><span class="op">$</span><span class="va">query</span>,        <span class="co"># query expressions</span>
-  name <span class="op">=</span> <span class="va">df_queries</span><span class="op">$</span><span class="va">query_id</span>,     <span class="co"># name/identifier for each query</span>
-  element <span class="op">=</span> <span class="va">df_queries</span><span class="op">$</span><span class="va">form_name</span>, <span class="co"># primary form for each query expression</span>
-  cols_base <span class="op">=</span> <span class="va">record_id</span>,          <span class="co"># columns to always include in return</span>
-  join_type <span class="op">=</span> <span class="st">"left"</span>,             <span class="co"># join type if query refers to multiple forms</span>
-  join_by <span class="op">=</span> <span class="st">"record_id"</span>           <span class="co"># join key if query refers to multiple forms</span>
-<span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/epicentre-msf/redcap" class="external-link">redcap</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">### create an API connection (this project just used for testing)</span></span>
+<span><span class="va">conn</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/rconn.html">rconn</a></span><span class="op">(</span></span>
+<span>  url <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"REDCAP_API_URL"</span><span class="op">)</span>,</span>
+<span>  token <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"REDCAP_PKG"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">### fetch REDCap version number</span></span>
+<span><span class="fu"><a href="reference/redcap_version.html">redcap_version</a></span><span class="op">(</span><span class="va">conn</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "10.8.5"</span></span>
+<span></span>
+<span><span class="co">### fetch metadata tables</span></span>
+<span><span class="va">df_dictionary</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/meta_dictionary.html">meta_dictionary</a></span><span class="op">(</span><span class="va">conn</span><span class="op">)</span></span>
+<span><span class="va">df_fields</span>     <span class="op">&lt;-</span> <span class="fu"><a href="reference/meta_fields.html">meta_fields</a></span><span class="op">(</span><span class="va">conn</span><span class="op">)</span></span>
+<span><span class="va">df_forms</span>      <span class="op">&lt;-</span> <span class="fu"><a href="reference/meta_forms.html">meta_forms</a></span><span class="op">(</span><span class="va">conn</span><span class="op">)</span></span>
+<span><span class="va">df_arms</span>       <span class="op">&lt;-</span> <span class="fu"><a href="reference/meta_arms.html">meta_arms</a></span><span class="op">(</span><span class="va">conn</span><span class="op">)</span></span>
+<span><span class="va">df_events</span>     <span class="op">&lt;-</span> <span class="fu"><a href="reference/meta_events.html">meta_events</a></span><span class="op">(</span><span class="va">conn</span><span class="op">)</span></span>
+<span><span class="va">df_mapping</span>    <span class="op">&lt;-</span> <span class="fu"><a href="reference/meta_mapping.html">meta_mapping</a></span><span class="op">(</span><span class="va">conn</span><span class="op">)</span></span>
+<span><span class="va">df_repeating</span>  <span class="op">&lt;-</span> <span class="fu"><a href="reference/meta_repeating.html">meta_repeating</a></span><span class="op">(</span><span class="va">conn</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">### fetch records (generally from a single form)</span></span>
+<span><span class="va">df_records</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fetch_records.html">fetch_records</a></span><span class="op">(</span><span class="va">conn</span>, forms <span class="op">=</span> <span class="st">"eligibility"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">### fetch records from all forms (as a list of data frames, one per form)</span></span>
+<span><span class="va">db_records</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fetch_database.html">fetch_database</a></span><span class="op">(</span><span class="va">conn</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">### project/user info</span></span>
+<span><span class="va">df_info</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/project_info.html">project_info</a></span><span class="op">(</span><span class="va">conn</span><span class="op">)</span></span>
+<span><span class="va">df_users</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/project_users.html">project_users</a></span><span class="op">(</span><span class="va">conn</span><span class="op">)</span></span>
+<span><span class="va">df_dags</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/project_dags.html">project_dags</a></span><span class="op">(</span><span class="va">conn</span><span class="op">)</span></span>
+<span><span class="va">df_users_dags</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/project_users_dags.html">project_users_dags</a></span><span class="op">(</span><span class="va">conn</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">### project backup/logging</span></span>
+<span><span class="va">backup_xml</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/project_xml.html">project_xml</a></span><span class="op">(</span><span class="va">conn</span><span class="op">)</span></span>
+<span><span class="va">backup_logs</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/project_logging.html">project_logging</a></span><span class="op">(</span><span class="va">conn</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">### generate queries based on branching logic in project codebook</span></span>
+<span><span class="va">df_queries</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/generate_queries.html">generate_queries</a></span><span class="op">(</span><span class="va">conn</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># run queries using the queryr package</span></span>
+<span><span class="va">queries_out</span> <span class="op">&lt;-</span> <span class="fu">queryr</span><span class="fu">::</span><span class="fu">query_vec</span><span class="op">(</span></span>
+<span>  x <span class="op">=</span> <span class="va">db_records</span>,                 <span class="co"># REDCap database as list of data frames</span></span>
+<span>  cond <span class="op">=</span> <span class="va">df_queries</span><span class="op">$</span><span class="va">query</span>,        <span class="co"># query expressions</span></span>
+<span>  name <span class="op">=</span> <span class="va">df_queries</span><span class="op">$</span><span class="va">query_id</span>,     <span class="co"># name/identifier for each query</span></span>
+<span>  element <span class="op">=</span> <span class="va">df_queries</span><span class="op">$</span><span class="va">form_name</span>, <span class="co"># primary form for each query expression</span></span>
+<span>  cols_base <span class="op">=</span> <span class="va">record_id</span>,          <span class="co"># columns to always include in return</span></span>
+<span>  join_type <span class="op">=</span> <span class="st">"left"</span>,             <span class="co"># join type if query refers to multiple forms</span></span>
+<span>  join_by <span class="op">=</span> <span class="st">"record_id"</span>           <span class="co"># join key if query refers to multiple forms</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="more-examples">More examples<a class="anchor" aria-label="anchor" href="#more-examples"></a>
@@ -155,49 +155,49 @@
 <ol style="list-style-type: decimal"><li>Customize form-specific names returned by <code><a href="reference/fetch_database.html">fetch_database()</a></code>
 </li></ol>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co">### default element names returned by fetch_database() are REDCap form names</span>
-<span class="va">db_records</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fetch_database.html">fetch_database</a></span><span class="op">(</span><span class="va">conn</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">db_records</span><span class="op">)</span>
-<span class="co">#&gt; [1] "enrolment"   "eligibility" "followup"</span>
-
-<span class="co">### to customize we need a function that takes a vector of form names and</span>
-<span class="co"># returns a vector of custom names</span>
-<span class="va">recode_forms</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span>
-  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/recode.html" class="external-link">recode</a></span><span class="op">(</span>
-    <span class="va">x</span>,
-    enrolment <span class="op">=</span> <span class="st">"ENR"</span>, eligibility <span class="op">=</span> <span class="st">"ELG"</span>, followup <span class="op">=</span> <span class="st">"FUP"</span>
-  <span class="op">)</span>
-<span class="op">}</span>
-
-<span class="va">db_records</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fetch_database.html">fetch_database</a></span><span class="op">(</span><span class="va">conn</span>, names_fn <span class="op">=</span> <span class="va">recode_forms</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">db_records</span><span class="op">)</span>
-<span class="co">#&gt; [1] "ENR" "ELG" "FUP"</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co">### default element names returned by fetch_database() are REDCap form names</span></span>
+<span><span class="va">db_records</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fetch_database.html">fetch_database</a></span><span class="op">(</span><span class="va">conn</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">db_records</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "enrolment"   "eligibility" "followup"</span></span>
+<span></span>
+<span><span class="co">### to customize we need a function that takes a vector of form names and</span></span>
+<span><span class="co"># returns a vector of custom names</span></span>
+<span><span class="va">recode_forms</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/recode.html" class="external-link">recode</a></span><span class="op">(</span></span>
+<span>    <span class="va">x</span>,</span>
+<span>    enrolment <span class="op">=</span> <span class="st">"ENR"</span>, eligibility <span class="op">=</span> <span class="st">"ELG"</span>, followup <span class="op">=</span> <span class="st">"FUP"</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="va">db_records</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fetch_database.html">fetch_database</a></span><span class="op">(</span><span class="va">conn</span>, names_fn <span class="op">=</span> <span class="va">recode_forms</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">db_records</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "ENR" "ELG" "FUP"</span></span></code></pre></div>
 <ol start="2" style="list-style-type: decimal"><li>Pass additional functions to <code><a href="reference/fetch_database.html">fetch_database()</a></code> to act on each form</li></ol>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span>, warn.conflicts <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://rlang.r-lib.org" class="external-link">rlang</a></span><span class="op">)</span>
-
-<span class="co">### for each form, find the column giving the date and time of form completion</span>
-<span class="co"># (ends with "_form_dt"), and use it to derive a new date column form_date</span>
-<span class="va">add_form_date</span>  <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">df</span><span class="op">)</span> <span class="op">{</span>
-  <span class="co"># find name of datetime col for given form</span>
-  <span class="va">col_dt</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grep</a></span><span class="op">(</span><span class="st">"_form_dt$"</span>, <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span>, value <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
-  <span class="co"># derive col form_date</span>
-  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>
-    <span class="va">df</span>,
-    form_date <span class="op">=</span> <span class="fu">lubridate</span><span class="fu">::</span><span class="fu"><a href="https://lubridate.tidyverse.org/reference/as_date.html" class="external-link">as_date</a></span><span class="op">(</span><span class="op">!</span><span class="op">!</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/tidyeval-compat.html" class="external-link">ensym</a></span><span class="op">(</span><span class="va">col_dt</span><span class="op">)</span><span class="op">)</span>,
-    .after <span class="op">=</span> <span class="st">"record_id"</span>
-  <span class="op">)</span>
-<span class="op">}</span>
-
-<span class="va">db_records</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fetch_database.html">fetch_database</a></span><span class="op">(</span><span class="va">conn</span>, fns <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">add_form_date</span><span class="op">)</span><span class="op">)</span>
-<span class="va">db_records</span><span class="op">$</span><span class="va">enrolment</span><span class="op">[</span>,<span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span> <span class="co"># print first few cols to show new form_date column</span>
-<span class="co">#&gt; # A tibble: 3 × 5</span>
-<span class="co">#&gt;   record_id form_date  redcap_event_name redcap_repeat_instrument redcap_repeat_instance</span>
-<span class="co">#&gt;   &lt;chr&gt;     &lt;date&gt;     &lt;chr&gt;             &lt;chr&gt;                                     &lt;int&gt;</span>
-<span class="co">#&gt; 1 0001      2020-12-01 Enrollment        &lt;NA&gt;                                         NA</span>
-<span class="co">#&gt; 2 0002      2020-11-25 Enrollment        &lt;NA&gt;                                         NA</span>
-<span class="co">#&gt; 3 0003      2020-12-11 Enrollment        &lt;NA&gt;                                         NA</span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span>, warn.conflicts <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://rlang.r-lib.org" class="external-link">rlang</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">### for each form, find the column giving the date and time of form completion</span></span>
+<span><span class="co"># (ends with "_form_dt"), and use it to derive a new date column form_date</span></span>
+<span><span class="va">add_form_date</span>  <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">df</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="co"># find name of datetime col for given form</span></span>
+<span>  <span class="va">col_dt</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grep</a></span><span class="op">(</span><span class="st">"_form_dt$"</span>, <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span>, value <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span>  <span class="co"># derive col form_date</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
+<span>    <span class="va">df</span>,</span>
+<span>    form_date <span class="op">=</span> <span class="fu">lubridate</span><span class="fu">::</span><span class="fu"><a href="https://lubridate.tidyverse.org/reference/as_date.html" class="external-link">as_date</a></span><span class="op">(</span><span class="op">!</span><span class="op">!</span><span class="fu"><a href="https://rlang.r-lib.org/reference/defusing-advanced.html" class="external-link">ensym</a></span><span class="op">(</span><span class="va">col_dt</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    .after <span class="op">=</span> <span class="st">"record_id"</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="va">db_records</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fetch_database.html">fetch_database</a></span><span class="op">(</span><span class="va">conn</span>, fns <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">add_form_date</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">db_records</span><span class="op">$</span><span class="va">enrolment</span><span class="op">[</span>,<span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span> <span class="co"># print first few cols to show new form_date column</span></span>
+<span><span class="co">#&gt; # A tibble: 3 × 5</span></span>
+<span><span class="co">#&gt;   record_id form_date  redcap_event_name redcap_repeat_instrument redcap_repeat_instance</span></span>
+<span><span class="co">#&gt;   &lt;chr&gt;     &lt;date&gt;     &lt;chr&gt;             &lt;chr&gt;                                     &lt;int&gt;</span></span>
+<span><span class="co">#&gt; 1 0001      2020-12-01 Enrollment        &lt;NA&gt;                                         NA</span></span>
+<span><span class="co">#&gt; 2 0002      2020-11-25 Enrollment        &lt;NA&gt;                                         NA</span></span>
+<span><span class="co">#&gt; 3 0003      2020-12-11 Enrollment        &lt;NA&gt;                                         NA</span></span></code></pre></div>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="links">
@@ -252,7 +252,7 @@
 
 <div class="pkgdown-footer-right">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.5.</p>
 </div>
 
     </footer>

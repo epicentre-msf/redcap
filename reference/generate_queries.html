@@ -72,55 +72,75 @@ not missing. Applies to any field with branching logic.</p></li>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">generate_queries</span><span class="op">(</span>
-  <span class="va">conn</span>,
-  forms <span class="op">=</span> <span class="cn">NULL</span>,
-  dict <span class="op">=</span> <span class="fu"><a href="meta_dictionary.html">meta_dictionary</a></span><span class="op">(</span><span class="va">conn</span>, forms <span class="op">=</span> <span class="va">forms</span>, expand_checkbox <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>,
-  lang <span class="op">=</span> <span class="st">"en"</span>,
-  query_types <span class="op">=</span> <span class="st">"both"</span>,
-  non_required <span class="op">=</span> <span class="cn">FALSE</span>,
-  drop_redundant <span class="op">=</span> <span class="cn">FALSE</span>,
-  on_error <span class="op">=</span> <span class="st">"warn"</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">generate_queries</span><span class="op">(</span></span>
+<span>  <span class="va">conn</span>,</span>
+<span>  forms <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  dict <span class="op">=</span> <span class="fu"><a href="meta_dictionary.html">meta_dictionary</a></span><span class="op">(</span><span class="va">conn</span>, forms <span class="op">=</span> <span class="va">forms</span>, expand_checkbox <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>,</span>
+<span>  lang <span class="op">=</span> <span class="st">"en"</span>,</span>
+<span>  query_types <span class="op">=</span> <span class="st">"both"</span>,</span>
+<span>  non_required <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  drop_redundant <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  on_error <span class="op">=</span> <span class="st">"warn"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>conn</dt>
 <dd><p>A REDCap API connection object (created with <code><a href="rconn.html">rconn</a></code>)</p></dd>
+
+
 <dt>forms</dt>
 <dd><p>Character vector of forms (i.e. instruments) to include. Set to
 <code>NULL</code> (the default) to generate queries for all forms in the project.</p></dd>
+
+
 <dt>dict</dt>
 <dd><p>Metadata dictionary. By default is fetched automatically with
 <code><a href="meta_dictionary.html">meta_dictionary</a></code>, but it's included as an argument here to allow the
 user to modify the dictionary before passing to <code>generate_queries</code> (e.g. to
 correct bugs in branching logic). If passing a modified version, make sure
 it is initially fetched with argument <code>expand_checkbox = FALSE</code>.</p></dd>
+
+
 <dt>lang</dt>
 <dd><p>Query language, either English ("en") or French ("fr"). Defaults
 to "en".</p></dd>
+
+
 <dt>query_types</dt>
 <dd><p>Which type of queries to generate (see <strong>Description</strong>
 above). Options are "missing", "not missing", or "both". Defaults to
 "both".</p></dd>
+
+
 <dt>non_required</dt>
 <dd><p>Logical indicating whether to include non-required fields
 in queries of type "Field missing". Defaults to <code>FALSE</code>.</p></dd>
+
+
 <dt>drop_redundant</dt>
 <dd><p>Logical indicating whether to simplify expressions by
 removing redundant components from expressions that test both for equality
 and inequality with the same variable. E.g.:<br><code>var == "X" &amp; var != ""</code> becomes <code>var == "X"</code></p></dd>
+
+
 <dt>on_error</dt>
 <dd><p>What to do if one or more elements of statements can't be
 translated into valid R expressions? Options are "ignore" (return <code>NA</code> for
 relevant elements), "warn" (return <code>NA</code> for relevant elements and give
 warning), or "fail" (throw error). Defaults to "warn".</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A <code><a href="https://tibble.tidyverse.org/reference/tbl_df-class.html" class="external-link">tibble</a></code>-style data frame specifying queries, with the
-following 7 columns:</p><dl><dt>query_id</dt>
+    
+
+<p>A <code><a href="https://tibble.tidyverse.org/reference/tbl_df-class.html" class="external-link">tibble</a></code>-style data frame specifying queries, with the
+following 7 columns:</p>
+
+
+<dl><dt>query_id</dt>
 <dd><p>Unique query identifier based on form name and integer sequence</p></dd>
 
 <dt>field_name</dt>
@@ -158,7 +178,7 @@ older?] is "Yes", item [Signed consent forms?] should not be missing)</p></dd>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.5.</p>
 </div>
 
     </footer></div>
