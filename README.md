@@ -41,7 +41,7 @@ Nutter.
     [queryr](https://github.com/epicentre-msf/queryr).
 
 *Note this package has only been tested with REDCap versions 10.0 -
-10.8*
+12.0*
 
 ### Installation
 
@@ -65,7 +65,7 @@ conn <- rconn(
 
 ### fetch REDCap version number
 redcap_version(conn)
-#> [1] "10.8.5"
+#> [1] "12.0.29"
 
 ### fetch metadata tables
 df_dictionary <- meta_dictionary(conn)

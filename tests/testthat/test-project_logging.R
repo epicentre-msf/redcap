@@ -9,10 +9,10 @@ test_that("project_logging works as expected", {
   expect_named(x1, c("timestamp", "username", "action", "details"))
 
   x2 <- project_logging(conn_test, type = "export")
-  expect_true(all(grepl("^Data Export", x2$action)))
+  expect_true(all(grepl("^Data Export", x2$action, ignore.case = TRUE)))
 
   x3 <- project_logging(conn_test, type = "record_add")
-  expect_true(all(grepl("^Created Record", x3$action)))
+  expect_true(all(grepl("^Create(d)? Record", x3$action, ignore.case = TRUE)))
 
   x4 <- project_logging(conn_test, type = "record", record = "0002")
   expect_true(all(grepl("0002", x4$action)))

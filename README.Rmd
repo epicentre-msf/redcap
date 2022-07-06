@@ -41,7 +41,7 @@ Benjamin Nutter.
   branching logic specified in the project codebook. These can be run using the
   `query_vec()` function in [queryr](https://github.com/epicentre-msf/queryr).
   
-_Note this package has only been tested with REDCap versions 10.0 - 10.8_
+_Note this package has only been tested with REDCap versions 10.0 - 12.0_
 
 ### Installation
 
