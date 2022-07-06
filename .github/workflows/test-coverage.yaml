@@ -14,6 +14,7 @@ jobs:
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
       REDCAP_PKG: ${{ secrets.REDCAP_PKG }}
+      REDCAP_API_URL: ${{ secrets.REDCAP_API_URL }}
     steps:
       - uses: actions/checkout@v2
       - uses: r-lib/actions/setup-r@v1
