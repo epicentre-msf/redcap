@@ -52,6 +52,12 @@
 #' @param times_chron Logical indicating whether to reclass time variables using
 #'   [chron::times] (`TRUE`) or leave as character hh:mm format (`FALSE`).
 #'   Defaults to `TRUE`.
+#' @param fn_dates Function to parse REDCap date variables. Defaults to
+#'   `parse_date`, an internal wrapper to [`lubridate::parse_date_time`]. If
+#'   date variables have been converted to numeric (e.g. by writing to Excel),
+#'   set to e.g. [`lubridate::as_date`] to convert back to dates.
+#' @param fn_datetimes Function to parse REDCap datetime variables. Defaults to
+#'   [`lubridate::as_datetime`].
 #' @param na Character vector of strings to interpret as missing values. Passed
 #'   to [readr::read_csv]. Defaults to `c("", "NA")`.
 #' @param dag Logical indicating whether to export the
@@ -123,6 +129,8 @@ fetch_records <- function(conn,
                           checkbox_labs = FALSE,
                           use_factors = FALSE,
                           times_chron = TRUE,
+                          fn_dates = parse_date,
+                          fn_datetimes = lubridate::as_datetime,
                           na = c("", "NA"),
                           dag = TRUE,
                           double_resolve = FALSE,
@@ -154,6 +162,8 @@ fetch_records <- function(conn,
     checkbox_labs = checkbox_labs,
     use_factors = use_factors,
     times_chron = times_chron,
+    fn_dates = fn_dates,
+    fn_datetimes = fn_datetimes,
     na = na,
     dag = dag,
     double_resolve = double_resolve,
@@ -182,6 +192,8 @@ fetch_records_ <- function(conn,
                            checkbox_labs,
                            use_factors,
                            times_chron,
+                           fn_dates,
+                           fn_datetimes,
                            na,
                            dag,
                            double_resolve,
@@ -366,7 +378,9 @@ fetch_records_ <- function(conn,
     use_factors = use_factors,
     value_labs = value_labs,
     header_labs = header_labs,
-    times_chron = times_chron
+    times_chron = times_chron,
+    fn_dates = fn_dates,
+    fn_datetimes = fn_datetimes
   )
 }
 
