@@ -5,14 +5,8 @@
 #'
 #' @param x A data frame representing a REDCap form
 #' @param dict A metadata dictionary
-#' @param fn_dates Function to parse REDCap date variables. Defaults to
-#'   `parse_date`, an internal wrapper to [`lubridate::parse_date_time`]. If
-#'   date variables have been converted to numeric (e.g. by writing to Excel),
-#'   set to e.g. [`lubridate::as_date`] to convert back to dates.
-#' @param fn_datetimes Function to parse REDCap datetime variables. Defaults to
-#'   [`lubridate::as_datetime`].
 #'
-#' @importFrom lubridate as_datetime
+#' @importFrom lubridate parse_date_time
 #' @export reclass
 reclass <- function(x,
                     dict,
@@ -21,7 +15,10 @@ reclass <- function(x,
                     header_labs = FALSE,
                     times_chron = TRUE,
                     fn_dates = parse_date,
-                    fn_datetimes = lubridate::as_datetime) {
+                    fn_dates_args = list(orders = c("Ymd", "dmY")),
+                    fn_datetimes = lubridate::parse_date_time,
+                    fn_datetimes_args = list(orders = c("Ymd HMS", "Ymd HM"))) {
+
 
   fn_dates <- match.fun(fn_dates)
   fn_datetimes <- match.fun(fn_datetimes)
@@ -40,11 +37,11 @@ reclass <- function(x,
 
   # date variables
   cols_date <- dict_foc[[col_field]][grepl("date_", dict_foc$validation)]
-  x <- cols_reclass(x, cols_date, fn_dates)
+  x <- cols_reclass(x, cols_date, fn_dates, fn_dates_args)
 
   # datetime variables
   cols_datetime <- dict_foc[[col_field]][grepl("datetime_", dict_foc$validation)]
-  x <- cols_reclass(x, cols_datetime, fn_datetimes)
+  x <- cols_reclass(x, cols_datetime, fn_datetimes, fn_datetimes_args)
 
   # time variables
   cols_time <- dict_foc[[col_field]][grepl("^time$", dict_foc$validation)]
@@ -80,7 +77,7 @@ reclass <- function(x,
 cols_reclass <- function(x, cols, fun, ...) {
   fun <- match.fun(fun)
   for (i in seq_along(cols)) {
-    x[[cols[i]]] <- fun(x[[cols[i]]], ...)
+    x[[cols[i]]] <- do.call(fun, c(list(x[[cols[i]]]), ...))
   }
   x
 }

@@ -13,7 +13,9 @@ reclass(
   header_labs = FALSE,
   times_chron = TRUE,
   fn_dates = parse_date,
-  fn_datetimes = lubridate::as_datetime
+  fn_dates_args = list(orders = c("Ymd", "dmY")),
+  fn_datetimes = lubridate::parse_date_time,
+  fn_datetimes_args = list(orders = c("Ymd HMS", "Ymd HM"))
 )
 }
 \arguments{
@@ -44,8 +46,14 @@ Defaults to \code{TRUE}.}
 date variables have been converted to numeric (e.g. by writing to Excel),
 set to e.g. \code{\link[lubridate:as_date]{lubridate::as_date}} to convert back to dates.}
 
+\item{fn_dates_args}{List of arguments to pass to \code{fn_dates}. Can set to
+empty list \code{list()} if using a function that doesn't take any arguments.}
+
 \item{fn_datetimes}{Function to parse REDCap datetime variables. Defaults to
-\code{\link[lubridate:as_date]{lubridate::as_datetime}}.}
+\code{\link[lubridate:parse_date_time]{lubridate::parse_date_time}}.}
+
+\item{fn_datetimes_args}{List of arguments to pass to \code{fn_datetimes}. Can set
+to empty list \code{list()} if using a function that doesn't take any arguments.}
 }
 \description{
 Reclass columns of a data frame to match classes specified in a metadata

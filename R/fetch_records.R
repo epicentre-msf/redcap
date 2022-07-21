@@ -56,8 +56,12 @@
 #'   `parse_date`, an internal wrapper to [`lubridate::parse_date_time`]. If
 #'   date variables have been converted to numeric (e.g. by writing to Excel),
 #'   set to e.g. [`lubridate::as_date`] to convert back to dates.
+#' @param fn_dates_args List of arguments to pass to `fn_dates`. Can set to
+#'   empty list `list()` if using a function that doesn't take any arguments.
 #' @param fn_datetimes Function to parse REDCap datetime variables. Defaults to
-#'   [`lubridate::as_datetime`].
+#'   [`lubridate::parse_date_time`].
+#' @param fn_datetimes_args List of arguments to pass to `fn_datetimes`. Can set
+#'   to empty list `list()` if using a function that doesn't take any arguments.
 #' @param na Character vector of strings to interpret as missing values. Passed
 #'   to [readr::read_csv]. Defaults to `c("", "NA")`.
 #' @param dag Logical indicating whether to export the
@@ -115,6 +119,7 @@
 #' fetch_records(conn, forms = "my_form")
 #' }
 #'
+#' @importFrom lubridate parse_date_time
 #' @export fetch_records
 fetch_records <- function(conn,
                           forms = NULL,
@@ -130,7 +135,9 @@ fetch_records <- function(conn,
                           use_factors = FALSE,
                           times_chron = TRUE,
                           fn_dates = parse_date,
-                          fn_datetimes = lubridate::as_datetime,
+                          fn_dates_args = list(orders = c("Ymd", "dmY")),
+                          fn_datetimes = lubridate::parse_date_time,
+                          fn_datetimes_args = list(orders = c("Ymd HMS", "Ymd HM")),
                           na = c("", "NA"),
                           dag = TRUE,
                           double_resolve = FALSE,
@@ -163,7 +170,9 @@ fetch_records <- function(conn,
     use_factors = use_factors,
     times_chron = times_chron,
     fn_dates = fn_dates,
+    fn_dates_args = fn_dates_args,
     fn_datetimes = fn_datetimes,
+    fn_datetimes_args = fn_datetimes_args,
     na = na,
     dag = dag,
     double_resolve = double_resolve,
@@ -193,7 +202,9 @@ fetch_records_ <- function(conn,
                            use_factors,
                            times_chron,
                            fn_dates,
+                           fn_dates_args,
                            fn_datetimes,
+                           fn_datetimes_args,
                            na,
                            dag,
                            double_resolve,
@@ -380,7 +391,9 @@ fetch_records_ <- function(conn,
     header_labs = header_labs,
     times_chron = times_chron,
     fn_dates = fn_dates,
-    fn_datetimes = fn_datetimes
+    fn_dates_args = fn_dates_args,
+    fn_datetimes = fn_datetimes,
+    fn_datetimes_args = fn_datetimes_args
   )
 }
 
