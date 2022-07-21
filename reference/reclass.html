@@ -65,7 +65,9 @@ dictionary</p>
 <span>  header_labs <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  times_chron <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  fn_dates <span class="op">=</span> <span class="va">parse_date</span>,</span>
-<span>  fn_datetimes <span class="op">=</span> <span class="fu">lubridate</span><span class="fu">::</span><span class="va"><a href="https://lubridate.tidyverse.org/reference/as_date.html" class="external-link">as_datetime</a></span></span>
+<span>  fn_dates_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>orders <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Ymd"</span>, <span class="st">"dmY"</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  fn_datetimes <span class="op">=</span> <span class="fu">lubridate</span><span class="fu">::</span><span class="va"><a href="https://lubridate.tidyverse.org/reference/parse_date_time.html" class="external-link">parse_date_time</a></span>,</span>
+<span>  fn_datetimes_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>orders <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Ymd HMS"</span>, <span class="st">"Ymd HM"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -112,9 +114,19 @@ date variables have been converted to numeric (e.g. by writing to Excel),
 set to e.g. <code><a href="https://lubridate.tidyverse.org/reference/as_date.html" class="external-link">lubridate::as_date</a></code> to convert back to dates.</p></dd>
 
 
+<dt>fn_dates_args</dt>
+<dd><p>List of arguments to pass to <code>fn_dates</code>. Can set to
+empty list <code><a href="https://rdrr.io/r/base/list.html" class="external-link">list()</a></code> if using a function that doesn't take any arguments.</p></dd>
+
+
 <dt>fn_datetimes</dt>
 <dd><p>Function to parse REDCap datetime variables. Defaults to
-<code><a href="https://lubridate.tidyverse.org/reference/as_date.html" class="external-link">lubridate::as_datetime</a></code>.</p></dd>
+<code><a href="https://lubridate.tidyverse.org/reference/parse_date_time.html" class="external-link">lubridate::parse_date_time</a></code>.</p></dd>
+
+
+<dt>fn_datetimes_args</dt>
+<dd><p>List of arguments to pass to <code>fn_datetimes</code>. Can set
+to empty list <code><a href="https://rdrr.io/r/base/list.html" class="external-link">list()</a></code> if using a function that doesn't take any arguments.</p></dd>
 
 </dl></div>
 
