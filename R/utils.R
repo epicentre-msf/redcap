@@ -1,6 +1,5 @@
 
 
-
 #' @noRd
 #' @importFrom stats setNames
 post_array <- function(x) {
@@ -27,6 +26,14 @@ empty_tibble <- function(x) {
     )
   )
   out[0, , drop = FALSE]
+}
+
+
+#' Parse number with comma decimal separator
+#'
+#' @noRd
+parse_number_comma <- function(x) {
+  as.numeric(gsub("\\,(\\d)", ".\\1", x))
 }
 
 

@@ -38,8 +38,9 @@ labels (\code{TRUE}) or raw variable names (\code{FALSE}). Defaults to \code{FAL
 return raw variable names.}
 
 \item{times_chron}{Logical indicating whether to reclass time variables using
-\link[chron:dates]{chron::times} (\code{TRUE}) or leave as character hh:mm format (\code{FALSE}).
-Defaults to \code{TRUE}.}
+\link[chron:dates]{chron::times} (\code{TRUE}) or leave as character HH:MM format (\code{FALSE}).
+Defaults to \code{TRUE}. Note this only applies to variables of REDCap type
+"Time (HH:MM)", and not "Time (MM:SS)".}
 
 \item{fn_dates}{Function to parse REDCap date variables. Defaults to
 \code{parse_date}, an internal wrapper to \code{\link[lubridate:parse_date_time]{lubridate::parse_date_time}}. If

@@ -29,11 +29,17 @@ reclass <- function(x,
   # subset dictionary to variables in x
   dict_foc <- dict[dict[[col_field]] %in% names(x), , drop = FALSE]
 
-  # numeric variables
-  is_num <- grepl("number|integer", dict_foc$validation) | dict_foc$field_type == "calc"
+  # numeric variables (decimal separator)
+  is_num <- grepl("number(?!.*comma)|integer", dict_foc$validation, perl = TRUE) | dict_foc$field_type == "calc"
   cols_num <- dict_foc[[col_field]][is_num]
   cols_num <- setdiff(cols_num, dict[[col_field]][1]) # remove ID col
   x <- cols_reclass(x, cols_num, as.numeric)
+
+  # numeric, comma separator
+  is_num_comma <- grepl("number(?=.*comma)", dict_foc$validation, perl = TRUE)
+  cols_num_comma <- dict_foc[[col_field]][is_num_comma]
+  cols_num_comma <- setdiff(cols_num_comma, dict[[col_field]][1]) # remove ID col
+  x <- cols_reclass(x, cols_num_comma, parse_number_comma)
 
   # date variables
   cols_date <- dict_foc[[col_field]][grepl("date_", dict_foc$validation)]

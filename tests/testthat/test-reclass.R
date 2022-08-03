@@ -21,11 +21,11 @@ test_that("reclass works as expected", {
   )
 
   x1_num <- x1
-  vars_date_time <- dict$field_name[grepl("date_|^time", dict$validation)]
+  vars_date_time <- dict$field_name[grepl("date_|^time$", dict$validation)]
   for (j in vars_date_time) { x1_num[[j]] <- as.numeric(x1_num[[j]]) }
 
   x1_reclass <- reclass(x1_num, dict, fn_dates = lubridate::as_date, fn_dates_args = list())
-  expect_identical(x1, x1_reclass)
+  expect_equal(x1, x1_reclass)
 
   ## expect that reclass can retain dates/datetimes as class character
   x2 <- fetch_records(

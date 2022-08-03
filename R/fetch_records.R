@@ -50,8 +50,9 @@
 #'   depending on arguments `value_labs` and `checkbox_labs`. Defaults to
 #'   `FALSE`.
 #' @param times_chron Logical indicating whether to reclass time variables using
-#'   [chron::times] (`TRUE`) or leave as character hh:mm format (`FALSE`).
-#'   Defaults to `TRUE`.
+#'   [chron::times] (`TRUE`) or leave as character HH:MM format (`FALSE`).
+#'   Defaults to `TRUE`. Note this only applies to variables of REDCap type
+#'   "Time (HH:MM)", and not "Time (MM:SS)".
 #' @param fn_dates Function to parse REDCap date variables. Defaults to
 #'   `parse_date`, an internal wrapper to [`lubridate::parse_date_time`]. If
 #'   date variables have been converted to numeric (e.g. by writing to Excel),
