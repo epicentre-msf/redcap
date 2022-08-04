@@ -89,23 +89,23 @@ parse_logging <- function(x, format_long = FALSE, dict = NULL) {
 
   ## check that all action types are covered (should be nrow = 0)
   # x %>%
-  #   filter(!grepl("^(Created|Deleted|Updated) Record", action)) %>%
-  #   filter(!grepl("^(Created|Deleted|Updated) (Role|User)", action)) %>%
-  #   filter(!grepl("^Data Export", action)) %>%
-  #   filter(!grepl("^Manage/Design", action)) %>%
-  #   filter(!grepl("^(Edited|Renamed) Role", action)) %>%
-  #   filter(!grepl("^User (Assigned to|Removed from) Role", action)) %>%
-  #   count(action)
+  #   filter(!grepl("^(Created?|Deleted?|Updated?) Record", action, ignore.case = TRUE)) %>%
+  #   filter(!grepl("^(Created?|Deleted?|Updated?) (Role|User)", action, ignore.case = TRUE)) %>%
+  #   filter(!grepl("^Data Export", action, ignore.case = TRUE)) %>%
+  #   filter(!grepl("^Manage/Design", action, ignore.case = TRUE)) %>%
+  #   filter(!grepl("^(Edited|Renamed) Role", action, ignore.case = TRUE)) %>%
+  #   filter(!grepl("^User (Assigned to|Removed from) Role", action, ignore.case = TRUE)) %>%
+  #   dplyr::count(action)
 
 
   ## filter log file to entries related to records (create/update/delete)
   log_file_records <- x %>%
     mutate(rowid = seq_len(n()), .before = 1) %>%
-    filter(grepl("^(Created|Deleted|Updated) Record", .data$action))
+    filter(grepl("^(Created?|Deleted?|Updated?) [Rr]ecord", .data$action, ignore.case = TRUE))
+
 
   # log_file_other <- x %>%
   #   filter(!grepl("^(Created|Deleted|Updated) Record", action))
-
 
   ## parse action (create/delete/update), action type (API/import/NA), record ID, and repeat instance
   log_parse <- log_file_records %>%
@@ -113,9 +113,9 @@ parse_logging <- function(x, format_long = FALSE, dict = NULL) {
     filter(!is.na(.data$details)) %>%                            # rm if empty details
     mutate(
       action_raw = .data$action,
-      action = stringr::str_extract(.data$action_raw, "(Created|Updated|Deleted) Record"),
+      action = stringr::str_extract(.data$action_raw, "(Created?|Updated?|Deleted?) [Rr]ecord"),
       action_type = stringr::str_extract(.data$action_raw, "\\(.*\\)"),
-      record_id = gsub("(Created|Updated|Deleted) Record (\\(.*\\) )*", "", .data$action_raw),
+      record_id = gsub("(Created?|Updated?|Deleted?) [Rr]ecord (\\(.*\\) )*", "", .data$action_raw),
       # note approach below is much faster than single regex statement with PERL look-behind
       redcap_repeat_instance = stringr::str_extract(.data$details, "\\[instance = \\d+\\]"),
       redcap_repeat_instance = as.integer(stringr::str_extract(.data$redcap_repeat_instance, "[[:digit:]]+")),
