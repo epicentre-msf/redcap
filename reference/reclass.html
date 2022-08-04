@@ -103,8 +103,9 @@ return raw variable names.</p></dd>
 
 <dt>times_chron</dt>
 <dd><p>Logical indicating whether to reclass time variables using
-<a href="https://rdrr.io/pkg/chron/man/dates.html" class="external-link">chron::times</a> (<code>TRUE</code>) or leave as character hh:mm format (<code>FALSE</code>).
-Defaults to <code>TRUE</code>.</p></dd>
+<a href="https://rdrr.io/pkg/chron/man/dates.html" class="external-link">chron::times</a> (<code>TRUE</code>) or leave as character HH:MM format (<code>FALSE</code>).
+Defaults to <code>TRUE</code>. Note this only applies to variables of REDCap type
+"Time (HH:MM)", and not "Time (MM:SS)".</p></dd>
 
 
 <dt>fn_dates</dt>
