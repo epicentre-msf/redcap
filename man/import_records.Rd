@@ -4,12 +4,26 @@
 \alias{import_records}
 \title{Import records into a REDCap project}
 \usage{
-import_records(conn, data, overwrite = "normal", return = "count")
+import_records(
+  conn,
+  data,
+  type = c("flat", "eav"),
+  overwrite = "normal",
+  return = "count"
+)
 }
 \arguments{
 \item{conn}{A REDCap API connection object (created with \code{\link{rconn}})}
 
 \item{data}{A data.frame containing record data to import into REDCap}
+
+\item{type}{One of:
+\itemize{
+\item "flat": data in wide-form with one record per row (default)
+\item "eav": data in long-form with one row per participant/instance/field (data
+should have columns "record", "field_name", and "value", and if longitudinal
+then also "redcap_event_name" and "redcap_repeat_instance")
+}}
 
 \item{overwrite}{Overwrite behaviour. Either "normal" to prevent missing
 values from overwriting data, or "overwrite" to allow data to be
