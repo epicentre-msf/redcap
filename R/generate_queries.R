@@ -48,7 +48,7 @@
 #' }
 #'
 #' @importFrom dplyr `%>%` filter mutate select left_join if_else n rename
-#'   arrange all_of bind_rows group_by ungroup across
+#'   arrange all_of bind_rows group_by ungroup summarize across case_when
 #' @importFrom rlang .data .env
 #' @export generate_queries
 generate_queries <- function(conn,
@@ -63,6 +63,7 @@ generate_queries <- function(conn,
                              non_required = FALSE,
                              drop_redundant = FALSE,
                              on_error = "warn") {
+
 
   ## validate argument lang
   lang <- match.arg(lang, c("en", "fr"))
@@ -141,40 +142,40 @@ generate_queries <- function(conn,
   # - var___1 %in% "Unchecked" & var___2 %in% "Unchecked" ...
   # - var___1 %in% "Checked" | var___2 %in% "Checked" ...
   q_field <- exported_fields %>%
-    dplyr::left_join(dict, by = c("original_field_name" = "field_name")) %>%
-    dplyr::select(
-      field_name = .data$original_field_name,
-      .data$export_field_name,
-      .data$form_name,
-      .data$field_type
+    left_join(dict, by = c("original_field_name" = "field_name")) %>%
+    select(
+      field_name = "original_field_name",
+      "export_field_name",
+      "form_name",
+      "field_type"
     ) %>%
-    dplyr::mutate(
-      var_missing = dplyr::if_else(
+    mutate(
+      var_missing = if_else(
         .data$field_type %in% "checkbox",
         paste0(.data$export_field_name, " %in% 'Unchecked'"),
         paste0("is.na(", .data$export_field_name, ")")
       ),
-      var_not_missing = dplyr::if_else(
+      var_not_missing = if_else(
         .data$field_type %in% "checkbox",
         paste0(.data$export_field_name, " %in% 'Checked'"),
         paste0("!is.na(", .data$export_field_name, ")")
       ),
     ) %>%
-    dplyr::group_by(
+    group_by(
       .data$field_name, .data$field_type
     ) %>%
-    dplyr::summarize(
+    summarize(
       var_missing = paste(.data$var_missing, collapse = " & "),
       var_not_missing = paste(.data$var_not_missing, collapse = " | "),
       .groups = "drop"
     ) %>%
-    dplyr::mutate(
-      var_missing = dplyr::if_else(
+    mutate(
+      var_missing = if_else(
         .data$field_type %in% "checkbox",
         paste0("(", .data$var_missing, ")"),
         .data$var_missing
       ),
-      var_not_missing = dplyr::if_else(
+      var_not_missing = if_else(
         .data$field_type %in% "checkbox",
         paste0("(", .data$var_not_missing, ")"),
         .data$var_not_missing
@@ -183,8 +184,8 @@ generate_queries <- function(conn,
 
   ## join q_logic and q_field
   q_full <- q_logic %>%
-    dplyr::left_join(q_field, by = c("field_name", "field_type")) %>%
-    dplyr::mutate(rownumber = seq_len(dplyr::n()))
+    left_join(q_field, by = c("field_name", "field_type")) %>%
+    mutate(rownumber = seq_len(n()))
 
   ## queries for var missing when should not be
   lab_missing_pre <- ifelse(
@@ -242,10 +243,10 @@ generate_queries <- function(conn,
     }
 
     q_missing <- q_full %>%
-      dplyr::filter(.data$required_field %in% req_fields) %>%
-      dplyr::mutate(
+      filter(.data$required_field %in% req_fields) %>%
+      mutate(
         query_type = "Missing",
-        query = dplyr::case_when(
+        query = case_when(
           !is.na(.data$branching_logic) & is.na(.data$logic_base) ~ NA_character_,
           is.na(.data$logic_base) ~ .data$var_missing,
           TRUE ~ paste(.data$logic_base, .data$var_missing, sep = " & ")
@@ -253,7 +254,7 @@ generate_queries <- function(conn,
         description = paste0(
           .env$lab_missing_pre, enclose(.data$field_label, l = "[", r = "]")
         ),
-        suggestion = dplyr::if_else(
+        suggestion = if_else(
           is.na(.data$branching_logic),
           paste0(
             .env$lab_item, enclose(.data$field_label, l = "[", r = "]"), .env$lab_missing_suf
@@ -271,8 +272,8 @@ generate_queries <- function(conn,
   ## queries for var not missing when should be
   if (query_types %in% c("not missing", "both")) {
     q_not_missing <- q_full %>%
-      dplyr::filter(!is.na(.data$branching_logic)) %>%
-      dplyr::mutate(
+      filter(!is.na(.data$branching_logic)) %>%
+      mutate(
         query_type = "Not missing",
         query = paste0("!", wrap_parens(.data$logic_base), " & ", .data$var_not_missing),
         description = paste0(.env$lab_not_missing_pre, enclose(.data$field_label, l = "[", r = "]")),
@@ -283,10 +284,10 @@ generate_queries <- function(conn,
           .data$logic_base_text
         )
       ) %>%
-      dplyr::mutate(
-        dplyr::across(
-          c(.data$query, .data$description, .data$suggestion),
-          ~ dplyr::if_else(is.na(.data$logic_base), NA_character_, .x)
+      mutate(
+        across(
+          all_of(c("query", "description", "suggestion")),
+          ~ if_else(is.na(.data$logic_base), NA_character_, .x)
         )
       )
   } else {
@@ -294,15 +295,15 @@ generate_queries <- function(conn,
   }
 
   ## combine and return
-  dplyr::bind_rows(q_missing, q_not_missing) %>%
-    dplyr::rename("required" = "required_field") %>%
-    dplyr::arrange(.data$rownumber, .data$query_type) %>%
-    dplyr::group_by(.data$form_name) %>%
-    dplyr::mutate(query_id = formatC(seq_len(dplyr::n()), width = 3, flag = "0")) %>%
-    dplyr::ungroup() %>%
-    dplyr::mutate(query_id = paste(.data$form_name, .data$query_id, sep = "__")) %>%
-    dplyr::select(
-      dplyr::all_of(
+  bind_rows(q_missing, q_not_missing) %>%
+    rename("required" = "required_field") %>%
+    arrange(.data$rownumber, .data$query_type) %>%
+    group_by(.data$form_name) %>%
+    mutate(query_id = formatC(seq_len(n()), width = 3, flag = "0")) %>%
+    ungroup() %>%
+    mutate(query_id = paste(.data$form_name, .data$query_id, sep = "__")) %>%
+    select(
+      all_of(
         c(
           "query_id",
           "field_name",

@@ -74,7 +74,7 @@
 #' parse_logging(project_logging(conn))
 #' }
 #'
-#' @importFrom dplyr `%>%` select filter mutate relocate if_else left_join n
+#' @importFrom dplyr `%>%` select filter mutate relocate if_else left_join n any_of
 #' @importFrom stringr str_extract
 #' @importFrom purrr map
 #' @importFrom tidyr unnest
@@ -87,7 +87,7 @@ parse_logging <- function(x, format_long = FALSE, dict = NULL) {
     stop("If format_long = TRUE, argument dict must be provided", call. = FALSE)
   }
 
-  ## check that all action types are covered (should be nrow = 0)
+  # ## check that all action types are covered (should be nrow = 0)
   # x %>%
   #   filter(!grepl("^(Created?|Deleted?|Updated?) Record", action, ignore.case = TRUE)) %>%
   #   filter(!grepl("^(Created?|Deleted?|Updated?) (Role|User)", action, ignore.case = TRUE)) %>%
@@ -103,9 +103,6 @@ parse_logging <- function(x, format_long = FALSE, dict = NULL) {
     mutate(rowid = seq_len(n()), .before = 1) %>%
     filter(grepl("^(Created?|Deleted?|Updated?) [Rr]ecord", .data$action, ignore.case = TRUE))
 
-
-  # log_file_other <- x %>%
-  #   filter(!grepl("^(Created|Deleted|Updated) Record", action))
 
   ## parse action (create/delete/update), action type (API/import/NA), record ID, and repeat instance
   log_parse <- log_file_records %>%
@@ -123,8 +120,8 @@ parse_logging <- function(x, format_long = FALSE, dict = NULL) {
       dag = grepl("Assign record to Data Access Group", .data$details),
       details = if_else(.data$dag, stringr::str_extract(.data$details, "redcap_data_access_group \\= \\'.*\\'"), .data$details)
     ) %>%
-    select(-.data$action_raw, -.data$dag) %>%
-    relocate(c(.data$action, .data$action_type, .data$record_id, .data$redcap_repeat_instance), .after = .data$username)
+    select(-any_of(c("action_raw", "dag", "record"))) %>%
+    relocate(c("action", "action_type", "record_id", "redcap_repeat_instance"), .after = "username")
 
 
   if (format_long) {
@@ -132,7 +129,7 @@ parse_logging <- function(x, format_long = FALSE, dict = NULL) {
     ## prep field_name to allowing joining form_name to log
     dict_prep <- dict %>%
       mutate(field_name = gsub("___(\\d+)$", "(\\1)", .data$field_name)) %>%
-      select(.data$field_name, .data$form_name)
+      select("field_name", "form_name")
 
     ## convert to long-format
     log_parse <- log_parse %>%
@@ -144,9 +141,9 @@ parse_logging <- function(x, format_long = FALSE, dict = NULL) {
         value = gsub("^\\'|\\'$", "", .data$value),
         value = dplyr::if_else(.data$value == "", NA_character_, .data$value)
       ) %>%
-      select(-.data$details, -.data$field_and_value) %>%
+      select(-any_of(c("details", "field_and_value"))) %>%
       left_join(dict_prep, by = "field_name") %>%
-      relocate(.data$form_name, .after = "record_id")
+      relocate("form_name", .after = "record_id")
   }
 
 

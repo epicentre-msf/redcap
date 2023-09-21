@@ -18,6 +18,8 @@ fetch_database(
   checkbox_labs = FALSE,
   use_factors = FALSE,
   times_chron = TRUE,
+  date_range_begin = NULL,
+  date_range_end = NULL,
   fn_dates = parse_date,
   fn_dates_args = list(orders = c("Ymd", "dmY")),
   fn_datetimes = lubridate::parse_date_time,
@@ -86,6 +88,16 @@ depending on arguments \code{value_labs} and \code{checkbox_labs}. Defaults to
 \link[chron:dates]{chron::times} (\code{TRUE}) or leave as character HH:MM format (\code{FALSE}).
 Defaults to \code{TRUE}. Note this only applies to variables of REDCap type
 "Time (HH:MM)", and not "Time (MM:SS)".}
+
+\item{date_range_begin}{Fetch only records created or modified \emph{after} a
+given date-time. Use format "YYYY-MM-DD HH:MM:SS" (e.g., "2017-01-01
+00:00:00" for January 1, 2017 at midnight server time). Defaults to NULL to
+omit a lower time limit.}
+
+\item{date_range_end}{Fetch only records created or modified \emph{before} a given
+date-time. Use format "YYYY-MM-DD HH:MM:SS" (e.g., "2017-01-01 00:00:00"
+for January 1, 2017 at midnight server time). Defaults to NULL to omit a
+lower time limit.}
 
 \item{fn_dates}{Function to parse REDCap date variables. Defaults to
 \code{parse_date}, an internal wrapper to \code{\link[lubridate:parse_date_time]{lubridate::parse_date_time}}. If
