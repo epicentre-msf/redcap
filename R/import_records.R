@@ -3,6 +3,11 @@
 #' @inheritParams fetch_records
 #'
 #' @param data A data.frame containing record data to import into REDCap
+#' @param type One of:
+#'  - "flat": data in wide-form with one record per row (default)
+#'  - "eav": data in long-form with one row per participant/instance/field (data
+#'  should have columns "record", "field_name", and "value", and if longitudinal
+#'  then also "redcap_event_name" and "redcap_repeat_instance")
 #' @param overwrite Overwrite behaviour. Either "normal" to prevent missing
 #'   values from overwriting data, or "overwrite" to allow data to be
 #'   overwritten with missing values. Defaults to "normal".
@@ -20,6 +25,7 @@
 #' @export import_records
 import_records <- function(conn,
                            data,
+                           type = c("flat", "eav"),
                            overwrite = "normal",
                            return = "count") {
 
@@ -31,61 +37,64 @@ import_records <- function(conn,
 
 
   ## argument validation -------------------------------------------------------
+  type <- match.arg(type, c("flat", "eav"))
   overwrite <- match.arg(overwrite, c("normal", "overwrite"))
   return <- match.arg(return, c("count", "ids", "nothin"))
 
-  # fields
-  fields_meta <- c(
-    "redcap_event_name",
-    "redcap_repeat_instrument",
-    "redcap_repeat_instance",
-    "redcap_data_access_group",
-    paste0(m_forms$instrument_name, "_complete")
-  )
+  if (type == "flat") {
 
-  test_valid(names(data), c(m_dict$field_name, fields_meta))
-
-  # ID field
-  name_id_field <- m_dict$field_name[1]
-
-  if (!name_id_field %in% names(data)) {
-    stop("data must contain record ID field: ", name_id_field, call. = FALSE)
-  }
-
-
-  ## validate factors ----------------------------------------------------------
-  if (any(m_fact$field_name %in% names(data))) {
-
-    cols_long <- c(name_id_field, m_fact$field_name)
-
-    data_long <- tidyr::pivot_longer(
-      cols_to_chr(data[,names(data) %in% cols_long, drop = FALSE]),
-      cols = !all_of(name_id_field)
+    # fields
+    fields_meta <- c(
+      "redcap_event_name",
+      "redcap_repeat_instrument",
+      "redcap_repeat_instance",
+      "redcap_data_access_group",
+      paste0(m_forms$instrument_name, "_complete")
     )
 
-    nonvalid_factor <- dplyr::anti_join(
-      data_long[!is.na(data_long$value), , drop = FALSE],
-      m_fact,
-      by = c("name" = "field_name", "value" = "value")
-    )
+    test_valid(names(data), c(m_dict$field_name, fields_meta))
 
-    if (nrow(nonvalid_factor) > 0) {
-      stop(
-        "Non-valid levels of factor-type variables:\n",
-        print_and_capture(nonvalid_factor),
-        call. = FALSE
-      )
+    # ID field
+    name_id_field <- m_dict$field_name[1]
+
+    if (!name_id_field %in% names(data)) {
+      stop("data must contain record ID field: ", name_id_field, call. = FALSE)
     }
+
+    ## validate factors ----------------------------------------------------------
+    if (any(m_fact$field_name %in% names(data))) {
+
+      cols_long <- c(name_id_field, m_fact$field_name)
+
+      data_long <- tidyr::pivot_longer(
+        cols_to_chr(data[,names(data) %in% cols_long, drop = FALSE]),
+        cols = !all_of(name_id_field)
+      )
+
+      nonvalid_factor <- dplyr::anti_join(
+        data_long[!is.na(data_long$value), , drop = FALSE],
+        m_fact,
+        by = c("name" = "field_name", "value" = "value")
+      )
+
+      if (nrow(nonvalid_factor) > 0) {
+        stop(
+          "Non-valid levels of factor-type variables:\n",
+          print_and_capture(nonvalid_factor),
+          call. = FALSE
+        )
+      }
+    }
+
+    ## reclass -------------------------------------------------------------------
+    cols_1dp <- m_dict$field_name[m_dict$validation %in% "number_1dp"]
+    cols_1dp <- intersect(cols_1dp, names(data))
+    data <- cols_reclass(data, cols_1dp, format_1dp)
+
+    cols_2dp <- m_dict$field_name[m_dict$validation %in% "number_2dp"]
+    cols_2dp <- intersect(cols_2dp, names(data))
+    data <- cols_reclass(data, cols_2dp, format_2dp)
   }
-
-  ## reclass -------------------------------------------------------------------
-  cols_1dp <- m_dict$field_name[m_dict$validation %in% "number_1dp"]
-  cols_1dp <- intersect(cols_1dp, names(data))
-  data <- cols_reclass(data, cols_1dp, format_1dp)
-
-  cols_2dp <- m_dict$field_name[m_dict$validation %in% "number_2dp"]
-  cols_2dp <- intersect(cols_2dp, names(data))
-  data <- cols_reclass(data, cols_2dp, format_2dp)
 
 
   ## prepare request body ------------------------------------------------------
@@ -93,7 +102,7 @@ import_records <- function(conn,
     token = conn$token,
     content = "record",
     format = "csv",
-    type = "flat",
+    type = type,
     csvDelimiter = "",
     overwriteBehavior = overwrite,
     returnContent = return,
