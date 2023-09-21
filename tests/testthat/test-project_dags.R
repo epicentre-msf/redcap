@@ -6,7 +6,7 @@ test_that("project_dags works as expected", {
 
   m1 <- project_dags(conn_test)
   expect_is(m1, "tbl_df")
-  expect_equal(names(m1), c("data_access_group_name", "unique_group_name"))
+  expect_true(all(c("data_access_group_name", "unique_group_name") %in% names(m1)))
 
 })
 

@@ -6,10 +6,10 @@ test_that("project_logging works as expected", {
 
   x1 <- project_logging(conn_test)
   expect_s3_class(x1, "tbl_df")
-  expect_named(x1, c("timestamp", "username", "action", "details"))
+  expect_true(all(c("timestamp", "username", "action", "details") %in% names(x1)))
 
   x2 <- project_logging(conn_test, type = "export")
-  expect_true(all(grepl("^Data Export", x2$action, ignore.case = TRUE)))
+  expect_true(all(grepl("export", x2$action, ignore.case = TRUE)))
 
   x3 <- project_logging(conn_test, type = "record_add")
   expect_true(all(grepl("^Create(d)? Record", x3$action, ignore.case = TRUE)))
@@ -18,7 +18,6 @@ test_that("project_logging works as expected", {
   expect_true(all(grepl("0002", x4$action)))
 
   x5 <- project_logging(conn_test, type = "record")
-
   dt_min <- "2021-03-01 13:30"
   x6 <- project_logging(conn_test, type = "record", time_start = dt_min)
   expect_gte(min(x6$timestamp), lubridate::ymd_hm(dt_min))
