@@ -53,6 +53,14 @@
 #'   [chron::times] (`TRUE`) or leave as character HH:MM format (`FALSE`).
 #'   Defaults to `TRUE`. Note this only applies to variables of REDCap type
 #'   "Time (HH:MM)", and not "Time (MM:SS)".
+#' @param date_range_begin Fetch only records created or modified *after* a
+#'   given date-time. Use format "YYYY-MM-DD HH:MM:SS" (e.g., "2017-01-01
+#'   00:00:00" for January 1, 2017 at midnight server time). Defaults to NULL to
+#'   omit a lower time limit.
+#' @param date_range_end Fetch only records created or modified *before* a given
+#'   date-time. Use format "YYYY-MM-DD HH:MM:SS" (e.g., "2017-01-01 00:00:00"
+#'   for January 1, 2017 at midnight server time). Defaults to NULL to omit a
+#'   lower time limit.
 #' @param fn_dates Function to parse REDCap date variables. Defaults to
 #'   `parse_date`, an internal wrapper to [`lubridate::parse_date_time`]. If
 #'   date variables have been converted to numeric (e.g. by writing to Excel),
@@ -135,6 +143,8 @@ fetch_records <- function(conn,
                           checkbox_labs = FALSE,
                           use_factors = FALSE,
                           times_chron = TRUE,
+                          date_range_begin = NULL,
+                          date_range_end = NULL,
                           fn_dates = parse_date,
                           fn_dates_args = list(orders = c("Ymd", "dmY")),
                           fn_datetimes = lubridate::parse_date_time,
@@ -143,7 +153,6 @@ fetch_records <- function(conn,
                           dag = TRUE,
                           double_resolve = FALSE,
                           double_sep = "--") {
-
 
   ## fetch metadata (dictionary, instruments, repeat instr, event mapping) -----
   m_dict <- meta_dictionary(conn)
@@ -170,6 +179,8 @@ fetch_records <- function(conn,
     checkbox_labs = checkbox_labs,
     use_factors = use_factors,
     times_chron = times_chron,
+    date_range_begin = date_range_begin,
+    date_range_end = date_range_end,
     fn_dates = fn_dates,
     fn_dates_args = fn_dates_args,
     fn_datetimes = fn_datetimes,
@@ -202,6 +213,8 @@ fetch_records_ <- function(conn,
                            checkbox_labs,
                            use_factors,
                            times_chron,
+                           date_range_begin,
+                           date_range_end,
                            fn_dates,
                            fn_dates_args,
                            fn_datetimes,
@@ -232,6 +245,15 @@ fetch_records_ <- function(conn,
   # fields
   test_valid(fields, m_dict$field_name)
 
+  # date range
+  if (!is.null(date_range_begin) && !valid_datetime_arg(date_range_begin)) {
+    stop("Argument 'date_range_begin' must have format YYYY-MM-DD HH:MM:SS")
+  }
+
+  if (!is.null(date_range_end) && !valid_datetime_arg(date_range_end)) {
+    stop("Argument 'date_range_end' must have format YYYY-MM-DD HH:MM:SS")
+  }
+
   # add ID field
   name_id_field <- m_dict$field_name[1]
   if (id_field & !name_id_field %in% fields) fields <- c(name_id_field, fields)
@@ -255,6 +277,11 @@ fetch_records_ <- function(conn,
   # add records and fields, if given
   if (!is.null(records)) body[["records"]] <- paste(records, collapse = ",")
   if (!is.null(fields)) body[["fields"]] <- paste(fields, collapse = ",")
+
+  # add date range fields, if given
+  if (!is.null(date_range_begin)) body[["dateRangeBegin"]] <- date_range_begin
+  if (!is.null(date_range_end))   body[["dateRangeEnd"]]   <- date_range_end
+
 
   ## fetch ---------------------------------------------------------------------
   out <- post_wrapper(

@@ -189,6 +189,13 @@ test_valid <- function(arg, options) {
 
 
 #' @noRd
+#' @importFrom lubridate as_datetime
+valid_datetime_arg <- function(x) {
+  !is.na(suppressWarnings(lubridate::as_datetime(x)))
+}
+
+
+#' @noRd
 #' @importFrom httr POST content stop_for_status
 #' @importFrom readr cols col_character
 post_wrapper <- function(conn,

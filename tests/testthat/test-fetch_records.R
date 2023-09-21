@@ -98,6 +98,24 @@ test_that("fetch_records works as expected", {
   )
 
   expect_true(!any(records_focal %in% x5$record_id))
+
+  ## test arguments date_range_begin, date_range_end
+  x6 <- fetch_records(
+    conn = conn_test,
+    forms = form_focal,
+    date_range_begin = format(Sys.time() + 1e6, "%Y-%m-%d %H:%M:%S")
+  )
+
+  expect_equal(nrow(x6), 0L)
+
+  x7 <- fetch_records(
+    conn = conn_test,
+    forms = form_focal,
+    date_range_end = "2020-01-01 12:00:00"
+  )
+
+  expect_equal(nrow(x7), 0L)
+
 })
 
 
@@ -106,5 +124,6 @@ test_that("fetch_records fails gracefully", {
   expect_error(fetch_records(conn_fake))
   skip_if(conn_test$token == "")
   expect_error(fetch_records(conn_test, forms = "blah_blah"))
+  expect_error(fetch_records(conn_test, date_range_begin = "Wednesday"))
 })
 
