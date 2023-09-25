@@ -48,7 +48,7 @@
 #' }
 #'
 #' @importFrom dplyr `%>%` filter mutate select left_join if_else n rename
-#'   arrange all_of bind_rows group_by ungroup summarize across case_when
+#'   arrange all_of bind_rows group_by ungroup summarize across case_when add_row
 #' @importFrom rlang .data .env
 #' @export generate_queries
 generate_queries <- function(conn,
@@ -63,7 +63,6 @@ generate_queries <- function(conn,
                              non_required = FALSE,
                              drop_redundant = FALSE,
                              on_error = "warn") {
-
 
   ## validate argument lang
   lang <- match.arg(lang, c("en", "fr"))
@@ -80,9 +79,26 @@ generate_queries <- function(conn,
   ## validate argument query_types
   query_types <- match.arg(query_types, c("missing", "not missing", "both"))
 
+  ## fetch metadata events
+  m_events <- meta_events(conn)
+
+  event_choices <- paste(
+    m_events$unique_event_name,
+    m_events$event_name,
+    sep = ", ",
+    collapse = " | "
+  )
+
   ## fetch metadata dictionary
   dict$field_label <- string_squish(dict$field_label)
-  dict_check <- expand_checkbox(dict)
+
+  dict_check <- expand_checkbox(dict) %>%
+    add_row(
+      field_name = "redcap_event_name",
+      field_label = "Event Name",
+      field_type = "radio",
+      choices = event_choices
+    )
 
   ## fetch metadata exported fields
   exported_fields <- meta_fields(conn)

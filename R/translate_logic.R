@@ -181,6 +181,7 @@ translate_prep <- function(x) {
   x <- gsub("[[:space:]]*<>[[:space:]]*", " != ", x)
   x <- gsub("[[:space:]]*>(?![=])[[:space:]]*", " > ", x, perl = TRUE)
   x <- gsub("[[:space:]]*<(?![=])[[:space:]]*", " < ", x, perl = TRUE)
+  x <- gsub("\\[event\\-name\\]", "[redcap_event_name]", x)
   x <- gsub("([[]|[]])", "", x)
   x <- gsub("\"", "\'", x)
   str2lang(x)
