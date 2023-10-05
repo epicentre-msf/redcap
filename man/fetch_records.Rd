@@ -27,6 +27,7 @@ fetch_records(
   na = c("", "NA"),
   dag = TRUE,
   double_resolve = FALSE,
+  double_remove = FALSE,
   double_sep = "--"
 )
 }
@@ -141,6 +142,12 @@ the entry number portion), and any of the following columns when present
 (accounting for argument \code{header_labs}): redcap_event_name (Redcap Event),
 redcap_repeat_instrument (Repeat Instrument), redcap_repeat_instance
 (Repeat Instance).}
+
+\item{double_remove}{Logical indicating whether to \emph{remove} double-entries
+(i.e. records entered in duplicate using REDCap's Double Data Entry
+module), by filtering out records where the record ID field contains
+pattern \code{double_sep} (see next argument), so that only merged records
+remain.}
 
 \item{double_sep}{If \code{double_resolve} is \code{TRUE}, the string separator used to
 split the record ID field into the record ID and entry number. Defaults to

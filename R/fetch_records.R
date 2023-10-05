@@ -94,6 +94,11 @@
 #'   (accounting for argument `header_labs`): redcap_event_name (Redcap Event),
 #'   redcap_repeat_instrument (Repeat Instrument), redcap_repeat_instance
 #'   (Repeat Instance).
+#' @param double_remove Logical indicating whether to _remove_ double-entries
+#'   (i.e. records entered in duplicate using REDCap's Double Data Entry
+#'   module), by filtering out records where the record ID field contains
+#'   pattern `double_sep` (see next argument), so that only merged records
+#'   remain.
 #' @param double_sep If `double_resolve` is `TRUE`, the string separator used to
 #'   split the record ID field into the record ID and entry number. Defaults to
 #'   "--".
@@ -152,6 +157,7 @@ fetch_records <- function(conn,
                           na = c("", "NA"),
                           dag = TRUE,
                           double_resolve = FALSE,
+                          double_remove = FALSE,
                           double_sep = "--") {
 
   ## fetch metadata (dictionary, instruments, repeat instr, event mapping) -----
@@ -188,6 +194,7 @@ fetch_records <- function(conn,
     na = na,
     dag = dag,
     double_resolve = double_resolve,
+    double_remove = double_remove,
     double_sep = double_sep,
     m_dict = m_dict,
     m_instr = m_instr,
@@ -222,6 +229,7 @@ fetch_records_ <- function(conn,
                            na,
                            dag,
                            double_resolve,
+                           double_remove,
                            double_sep,
                            m_dict,
                            m_instr,
@@ -230,6 +238,11 @@ fetch_records_ <- function(conn,
                            m_mapping) {
 
   ## argument validation -------------------------------------------------------
+
+  # double data entry
+  if (double_resolve & double_remove) {
+    stop("Arguments 'double_resolve' and 'double_remove' can not both be TRUE")
+  }
 
   # forms
   test_valid(forms, m_instr$instrument_name)
@@ -395,7 +408,7 @@ fetch_records_ <- function(conn,
     out <- out[!rows_missing, , drop = FALSE]
   }
 
-  ## resolve double-entry ------------------------------------------------------
+  ## resolve or remove double data entry ---------------------------------------
   if (double_resolve & !name_id_field %in% names(out)) {
     warning(
       "Can't resolve double entries because return doesn't contain record ID field ",
@@ -409,6 +422,17 @@ fetch_records_ <- function(conn,
       double_sep = double_sep
     )
   }
+
+  if (double_remove & !name_id_field %in% names(out)) {
+    warning(
+      "Can't remove double entries because return doesn't contain record ID field ",
+      sQuote(name_id_field, q = FALSE), call. = FALSE
+    )
+  } else if (double_remove) {
+    rows_double <- grepl(double_sep, out[[name_id_field]], fixed = TRUE)
+    out <- out[!rows_double, , drop = FALSE]
+  }
+
 
   ## reclass columns and return ------------------------------------------------
   reclass(

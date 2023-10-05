@@ -116,6 +116,28 @@ test_that("fetch_records works as expected", {
 
   expect_equal(nrow(x7), 0L)
 
+  ## test arguments double_resolve, double_remove
+  x8 <- suppressWarnings(
+    fetch_records(
+      conn = conn_test,
+      forms = form_focal,
+      double_resolve = TRUE
+    )
+  )
+
+  x9 <- fetch_records(
+    conn = conn_test,
+    forms = form_focal,
+    double_remove = TRUE
+  )
+
+  expect_true("entry" %in% names(x8))
+  expect_equal(nrow(x8), nrow(x9))
+  expect_true(all(!grepl("--", x8$record_id)))
+  expect_true(all(!grepl("--", x9$record_id)))
+
+  expect_error(fetch_records(conn_test, double_resolve = TRUE, double_remove = TRUE))
+
 })
 
 
