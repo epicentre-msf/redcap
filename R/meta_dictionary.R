@@ -137,7 +137,7 @@ expand_checkbox <- function(x) {
       field_label_orig = .data$field_label,
       checkbox_value = purrr::map_chr(.data$choices, ~ strsplit(.x, ", *")[[1]][1]),
       checkbox_label = purrr::map_chr(.data$choices, ~ strsplit(.x, ", *")[[1]][2]),
-      field_name = paste(.data$field_name, .data$checkbox_value, sep = "___"),
+      field_name = paste(.data$field_name, tolower(.data$checkbox_value), sep = "___"),
       field_label = paste0(.data$field_label, " (choice=", .data$checkbox_label, ")"),
       choices = "0, Unchecked | 1, Checked"
     )

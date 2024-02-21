@@ -176,7 +176,7 @@ translate_prep <- function(x) {
   x <- gsub("\\[\\w+\\](?=\\[)", "", x, perl = TRUE)
   x <- gsub("[[:space:]]+or[[:space:]]+", " | ", x, ignore.case = TRUE)
   x <- gsub("[[:space:]]+and[[:space:]]+", " & ", x, ignore.case = TRUE)
-  x <- gsub("([a-z,0-9,_])\\((?<=\\()(.*?)(?=\\))\\)", "\\1___\\2", x, perl = TRUE)
+  x <- gsub("([a-z,0-9,_])\\((?<=\\()(.*?)(?=\\))\\)", "\\1___\\L\\2", x, perl = TRUE)
   x <- gsub("[[:space:]]*(?<![><])=[[:space:]]*", " == ", x, perl = TRUE)
   x <- gsub("[[:space:]]*<>[[:space:]]*", " != ", x)
   x <- gsub("[[:space:]]*>(?![=])[[:space:]]*", " > ", x, perl = TRUE)

@@ -10,6 +10,10 @@ test_that("translate_logic works as expected", {
     "head_household", "1", "Yes",
     "type___88", "0", "Unchecked",
     "type___88", "1", "Checked",
+    "fruit___app", "0", "Unchecked",
+    "fruit___app", "1", "Checked",
+    "fruit___ban", "0", "Unchecked",
+    "fruit___ban", "1", "Checked",
     "signature", "0", "No",
     "signature", "1", "Yes",
     "relation", "0", "No",
@@ -24,7 +28,8 @@ test_that("translate_logic works as expected", {
     "[head_household]=1 and [consent]=0 and [consent]<>\"\"",
     "[type(88)] = '1'",
     "[signature]='1' and [age] < 18",
-    "[relation]=88"
+    "[relation]=88",
+    "[fruit(APP)]='1'"
   )
 
   redcap_logic_tr <- c(
@@ -32,7 +37,8 @@ test_that("translate_logic works as expected", {
     "head_household == \"Yes\" & consent == \"No\" & !is.na(consent)",
     "type___88 == \"Checked\"",
     "signature == \"Yes\" & age < 18",
-    "relation == \"Other\""
+    "relation == \"Other\"",
+    "fruit___app == \"Checked\""
   )
 
   expect_equal(
@@ -46,6 +52,7 @@ test_that("translate_logic works as expected", {
     ),
     redcap_logic_tr
   )
+
 })
 
 
