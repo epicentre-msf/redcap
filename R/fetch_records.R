@@ -160,12 +160,14 @@ fetch_records <- function(conn,
                           double_remove = FALSE,
                           double_sep = "--") {
 
+
   ## fetch metadata (dictionary, instruments, repeat instr, event mapping) -----
   m_dict <- meta_dictionary(conn)
   m_instr <- meta_forms(conn)
   m_events <- meta_events(conn, on_error = "null")
   m_repeat <- suppressWarnings(meta_repeating(conn, on_error = "null"))
   m_mapping <- meta_mapping(conn, on_error = "null")
+  m_dags <- project_dags(conn)
 
   ## fetch records -------------------------------------------------------------
   # the use of the lower-level fn fetch_records_ is to enable vectorization over
@@ -200,13 +202,17 @@ fetch_records <- function(conn,
     m_instr = m_instr,
     m_events = m_events,
     m_repeat = m_repeat,
-    m_mapping = m_mapping
+    m_mapping = m_mapping,
+    m_dags = m_dags
   )
 }
 
 
 #' @noRd
-#' @importFrom dplyr left_join
+#' @importFrom dplyr `%>%` left_join filter mutate transmute bind_rows if_else
+#' @importFrom rlang .data .env
+#' @importFrom stringr str_extract
+#' @importFrom dbc clean_categorical
 fetch_records_ <- function(conn,
                            forms,
                            events,
@@ -235,9 +241,14 @@ fetch_records_ <- function(conn,
                            m_instr,
                            m_events,
                            m_repeat,
-                           m_mapping) {
+                           m_mapping,
+                           m_dags) {
 
   ## argument validation -------------------------------------------------------
+
+  if (header_labs & value_labs) {
+    stop("Setting arguments 'header_labs' and 'value_labs' both to TRUE is not currently supported")
+  }
 
   # double data entry
   if (double_resolve & double_remove) {
@@ -280,7 +291,7 @@ fetch_records_ <- function(conn,
     csvDelimiter = "",
     forms = paste(forms, collapse = ","),
     events = paste(events, collapse = ","),
-    rawOrLabel = ifelse(value_labs, "label", "raw"),
+    rawOrLabel = "raw",
     rawOrLabelHeaders = ifelse(header_labs, "label", "raw"),
     exportCheckboxLabel = tolower(checkbox_labs),
     exportDataAccessGroups = tolower(dag),
@@ -304,6 +315,7 @@ fetch_records_ <- function(conn,
     na = na,
     on_error = "fail"
   )
+
 
   ## if no records, populate empty form ----------------------------------------
   cols_form <- if (header_labs) {
@@ -330,6 +342,54 @@ fetch_records_ <- function(conn,
   if (!any(names(out) %in% cols_form)) {
     out <- empty_tibble(c(cols_base, setdiff(cols_form, cols_base)))
   }
+
+  ## raw values to labels ------------------------------------------------------
+  if (value_labs) {
+
+    m_factors_instruments <- m_instr %>%
+      transmute(
+        variable = .env$col_repeat_instrument,
+        value = .data$instrument_name,
+        replacement = .data$instrument_label
+      )
+
+    m_factors_events <- m_events %>%
+      transmute(
+        variable = .env$col_event,
+        value = .data$unique_event_name,
+        replacement = .data$event_name
+      )
+
+    m_factors_dags <- m_dags %>%
+      transmute(
+        variable = .env$col_dag,
+        value = .data$unique_group_name,
+        replacement = .data$data_access_group_name
+      )
+
+    m_factors_raw <- meta_factors(conn, forms = forms, add_complete = TRUE)
+
+    if (checkbox_labs) {
+
+      m_factors_raw <- m_factors_raw %>%
+        mutate(
+          label = if_else(.data$field_type %in% "checkbox", stringr::str_extract(.data$field_label, "(?<=\\(choice=).+(?=\\))"), .data$label),
+          label = if_else(.data$field_type %in% "checkbox" & .data$value == "0", NA_character_, .data$label)
+        )
+    }
+
+    m_factors <- m_factors_raw %>%
+      transmute(variable = .data$field_name, .data$value, replacement = .data$label) %>%
+      bind_rows(m_factors_instruments, m_factors_events, m_factors_dags)
+
+    out <- dbc::clean_categorical(
+      out,
+      dict_allowed = m_factors,
+      dict_clean = m_factors,
+      col_allowed_value = "replacement"
+    )
+  }
+
 
   ## filter to selected redcap_repeat_instance ---------------------------------
 

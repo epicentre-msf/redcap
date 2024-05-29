@@ -80,6 +80,7 @@ fetch_database <- function(conn,
   m_events <- meta_events(conn, on_error = "null")
   m_repeat <- suppressWarnings(meta_repeating(conn, on_error = "null"))
   m_mapping <- meta_mapping(conn, on_error = "null")
+  m_dags <- project_dags(conn)
 
   ## validate arguments --------------------------------------------------------
   names_fn <- match.fun(names_fn)
@@ -120,7 +121,8 @@ fetch_database <- function(conn,
     m_instr = m_instr,
     m_events = m_events,
     m_repeat = m_repeat,
-    m_mapping = m_mapping
+    m_mapping = m_mapping,
+    m_dags = m_dags
   )
 
   names(out) <- names_fn(forms)
