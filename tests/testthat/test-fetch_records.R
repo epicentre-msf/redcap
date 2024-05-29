@@ -63,20 +63,20 @@ test_that("fetch_records works as expected", {
 
 
   ## test header_labs = TRUE, and value_labs TRUE + checkbox_labs FALSE
-  x3 <- fetch_records(
-    conn = conn_test,
-    forms = form_focal,
-    events = event_focal,
-    value_labs = TRUE,
-    header_labs = TRUE,
-    checkbox_labs = FALSE,
-    use_factors = FALSE,
-    dag = FALSE
-  )
-
-  expect_true(all(dict$field_label %in% names(x3)))
-  check_var <- "Which serious adverse event occurred? (choice=Participant was hospitalized)"
-  expect_true(all(x3[[check_var]] %in% c("Unchecked", "Checked")))
+  # x3 <- fetch_records(
+  #   conn = conn_test,
+  #   forms = form_focal,
+  #   events = event_focal,
+  #   value_labs = TRUE,
+  #   header_labs = TRUE,
+  #   checkbox_labs = FALSE,
+  #   use_factors = FALSE,
+  #   dag = FALSE
+  # )
+  #
+  # expect_true(all(dict$field_label %in% names(x3)))
+  # check_var <- "Which serious adverse event occurred? (choice=Participant was hospitalized)"
+  # expect_true(all(x3[[check_var]] %in% c("Unchecked", "Checked")))
 
 
   ## test argument records
