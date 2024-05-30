@@ -183,8 +183,8 @@ string_count <- function(string, pattern) {
 
 
 #' @noRd
-test_valid <- function(arg, options) {
-  arg_name <- deparse(substitute(arg))
+test_valid <- function(arg, arg_name, options) {
+
   non_matching <- setdiff(arg, options)
 
   if (length(non_matching) > 0) {

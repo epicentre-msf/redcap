@@ -63,10 +63,10 @@ project_xml <- function(conn,
   #   if (!name_id_field %in% fields) fields <- c(name_id_field, fields)
   # }
 
-  test_valid(fields, m_dict$field_name)
+  test_valid(fields, "fields", m_dict$field_name)
 
   # validate events
-  test_valid(events, m_events$unique_event_name)
+  test_valid(events, "events", m_events$unique_event_name)
 
 
   body <- list(
@@ -95,6 +95,7 @@ project_xml <- function(conn,
   if (response$status_code != 200L) {
     stop(httr::content(response)[[1]], call. = FALSE)
   } else {
+
     out <- xml2::read_xml(response)
   }
 

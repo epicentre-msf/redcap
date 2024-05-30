@@ -52,7 +52,7 @@ import_records <- function(conn,
       paste0(m_forms$instrument_name, "_complete")
     )
 
-    test_valid(names(data), c(m_dict$field_name, fields_meta))
+    test_valid(names(data), "column names", c(m_dict$field_name, fields_meta))
 
     # ID field
     name_id_field <- m_dict$field_name[1]

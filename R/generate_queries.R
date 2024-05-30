@@ -72,7 +72,7 @@ generate_queries <- function(conn,
   m_instr <- meta_forms(conn)
 
   if (!is.null(forms)) {
-    test_valid(forms, m_instr$instrument_name)
+    test_valid(forms, "forms", m_instr$instrument_name)
   } else {
     forms <- m_instr$instrument_name
   }

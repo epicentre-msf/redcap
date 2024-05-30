@@ -76,7 +76,7 @@ meta_dictionary <- function(conn,
 
   if (!is.null(forms)) {
     m_instr <- meta_forms(conn)
-    test_valid(forms, m_instr$instrument_name)
+    test_valid(forms, "forms", m_instr$instrument_name)
     out <- out[out$form_name %in% forms, , drop = FALSE]
   }
 
@@ -91,8 +91,6 @@ meta_dictionary <- function(conn,
         SIMPLIFY = FALSE
       )
     )
-
-
   }
 
   if (!is.null(out)) {

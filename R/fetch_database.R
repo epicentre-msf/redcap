@@ -74,6 +74,7 @@ fetch_database <- function(conn,
                            double_sep = "--",
                            fns = NULL) {
 
+
   ## fetch metadata (dictionary, instruments, repeat instr, event mapping) -----
   m_dict <- meta_dictionary(conn)
   m_instr <- meta_forms(conn)
@@ -84,7 +85,7 @@ fetch_database <- function(conn,
 
   ## validate arguments --------------------------------------------------------
   names_fn <- match.fun(names_fn)
-  test_valid(forms, m_instr$instrument_name)
+  test_valid(forms, "forms", m_instr$instrument_name)
   if (is.null(forms)) forms <- unique(m_instr$instrument_name)
   if (!is.null(fns)) fns_match <- lapply(fns, match.fun)
 

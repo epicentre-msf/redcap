@@ -256,18 +256,18 @@ fetch_records_ <- function(conn,
   }
 
   # forms
-  test_valid(forms, m_instr$instrument_name)
+  test_valid(forms, "forms", m_instr$instrument_name)
   if (is.null(forms)) forms <- unique(m_instr$instrument_name)
 
   # events (note: events metadata not available for classic projects)
   if (!is.null(m_mapping)) {
     events_for_forms <- m_mapping$unique_event_name[m_mapping$form %in% forms]
-    test_valid(events, events_for_forms)
+    test_valid(events, "events", events_for_forms)
     if (is.null(events)) events <- events_for_forms
   }
 
   # fields
-  test_valid(fields, m_dict$field_name)
+  test_valid(fields, "fields", m_dict$field_name)
 
   # date range
   if (!is.null(date_range_begin) && !valid_datetime_arg(date_range_begin)) {
