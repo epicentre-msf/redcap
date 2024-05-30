@@ -1,6 +1,15 @@
 
 
 #' @noRd
+cutoff_str_len <- function(x, nchar_max, suffix = "...") {
+
+  is_too_long <- !is.na(x) & nchar(x) > nchar_max
+  x[is_too_long] <- paste0(substr(x[is_too_long], 1L, nchar_max - nchar(suffix)), suffix)
+  x
+}
+
+
+#' @noRd
 #' @importFrom stats setNames
 post_array <- function(x) {
   stats::setNames(
@@ -258,7 +267,6 @@ split_choices <- function(x) {
 #' @noRd
 #' @importFrom stringr str_split
 split_value_label <- function(x, i) {
-  # strsplit(x, "\\,[[:space:]]*")[[1]][i]
   stringr::str_split(x, "\\,[[:space:]]*", n = 2)[[1]][i]
 }
 
