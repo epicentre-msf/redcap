@@ -13,6 +13,7 @@ generate_queries(
   query_types = "both",
   non_required = FALSE,
   drop_redundant = FALSE,
+  field_nchar_max = 80L,
   on_error = "warn"
 )
 }
@@ -42,6 +43,10 @@ in queries of type "Field missing". Defaults to \code{FALSE}.}
 removing redundant components from expressions that test both for equality
 and inequality with the same variable. E.g.:\cr
 \code{var == "X" & var != ""} becomes \code{var == "X"}}
+
+\item{field_nchar_max}{Integer indicating the maximum number of characters to
+allow in field name labels before they are truncated and appended with
+"...". Defaults to 80L.}
 
 \item{on_error}{What to do if one or more elements of statements can't be
 translated into valid R expressions? Options are "ignore" (return \code{NA} for

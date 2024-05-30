@@ -62,6 +62,7 @@ generate_queries <- function(conn,
                              query_types = "both",
                              non_required = FALSE,
                              drop_redundant = FALSE,
+                             field_nchar_max = 80L,
                              on_error = "warn") {
 
   ## validate argument lang
@@ -90,7 +91,7 @@ generate_queries <- function(conn,
   )
 
   ## fetch metadata dictionary
-  dict$field_label <- string_squish(dict$field_label)
+  dict$field_label <- cutoff_str_len(string_squish(dict$field_label), field_nchar_max)
 
   dict_check <- expand_checkbox(dict) %>%
     add_row(
@@ -143,6 +144,7 @@ generate_queries <- function(conn,
       use_is_na = FALSE,
       use_in = FALSE,
       drop_redundant = drop_redundant,
+      field_nchar_max = field_nchar_max,
       meta_factors = fact_check,
       meta_dictionary = dict_check,
       on_error = "ignore"

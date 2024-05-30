@@ -34,6 +34,9 @@
 #'   removing redundant components from expressions that test both for equality
 #'   and inequality with the same variable. E.g.:\cr
 #'  `var == "X" & var != ""` becomes `var == "X"`
+#' @param field_nchar_max Integer indicating the maximum number of characters to
+#'   allow in field name labels before they are truncated and appended with
+#'   "...". Defaults to 80L.
 #' @param meta_factors A data frame containing variable names (column
 #'   `field_name`) and corresponding values (column `value`) and labels (column
 #'   `label`) for factor-type variables. Fetch with [`meta_factors`]. Only
@@ -69,6 +72,7 @@ translate_logic <- function(x,
                             use_is_na = TRUE,
                             use_in = TRUE,
                             drop_redundant = FALSE,
+                            field_nchar_max = 80L,
                             meta_factors = NULL,
                             meta_dictionary = NULL,
                             on_error = "warn") {
@@ -97,6 +101,7 @@ translate_logic <- function(x,
     use_is_na = use_is_na,
     use_in = use_in,
     drop_redundant = drop_redundant,
+    field_nchar_max = field_nchar_max,
     meta_factors = meta_factors,
     meta_dictionary = meta_dictionary
   )
@@ -131,8 +136,10 @@ translate_logic_ <- function(x,
                              use_is_na,
                              use_in,
                              drop_redundant,
+                             field_nchar_max,
                              meta_factors,
                              meta_dictionary) {
+
 
   if (!is.na(x)) {
     x_prep <- try(translate_prep(x), silent = TRUE)
@@ -149,6 +156,7 @@ translate_logic_ <- function(x,
         use_header_labs = use_header_labs,
         use_is_na = use_is_na,
         use_in = use_in,
+        field_nchar_max = field_nchar_max,
         meta_factors = meta_factors,
         meta_dictionary = meta_dictionary
       )
@@ -217,20 +225,21 @@ translate_traverse <- function(x,
                                use_header_labs,
                                use_is_na,
                                use_in,
+                               field_nchar_max,
                                meta_factors,
                                meta_dictionary) {
 
   if (is_expr_lowest(x)) {
     if (use_value_labs)  x <- translate_options(x, meta_factors)
     if (use_in)          x <- translate_equals(x, meta_factors$field_name, use_is_na)
-    if (use_header_labs) x <- translate_names(x, meta_dictionary)
+    if (use_header_labs) x <- translate_names(x, meta_dictionary, field_nchar_max)
     if (use_is_na)       x <- translate_missing(x)
   } else {
     for (i in seq_len(length(x))) {
       if (is_expr_lowest(x[[i]])) {
         if (use_value_labs)  x[[i]] <- translate_options(x[[i]], meta_factors)
         if (use_in)          x[[i]] <- translate_equals(x[[i]], meta_factors$field_name, use_is_na)
-        if (use_header_labs) x[[i]] <- translate_names(x[[i]], meta_dictionary)
+        if (use_header_labs) x[[i]] <- translate_names(x[[i]], meta_dictionary, field_nchar_max)
         if (use_is_na)       x[[i]] <- translate_missing(x[[i]])
       } else {
         x[[i]] <- translate_traverse(
@@ -239,6 +248,7 @@ translate_traverse <- function(x,
           use_header_labs = use_header_labs,
           use_is_na = use_is_na,
           use_in = use_in,
+          field_nchar_max = field_nchar_max,
           meta_factors = meta_factors,
           meta_dictionary = meta_dictionary
         )
@@ -305,9 +315,12 @@ translate_options <- function(x, meta_factors) {
 #'
 #' @param x A call returned by str2lang()
 #' @param dict The metadata dictionary (see [`meta_dictionary`])
+#' @param nchar_max Max number of chars to include in variable labels. Longer
+#'   labels will be cutoff at nchar_max - 3 characters and appended with "...".
+#'
 #'
 #' @noRd
-translate_names <- function(x, dict) {
+translate_names <- function(x, dict, field_nchar_max) {
 
   vars_in_dict <- intersect(all.vars(x), dict$field_name)
 
@@ -315,6 +328,7 @@ translate_names <- function(x, dict) {
 
     for (i in seq_along(vars_in_dict)) {
       var_label <- dict$field_label[dict$field_name %in% vars_in_dict[i]]
+      if (nchar(var_label) > field_nchar_max) var_label <- cutoff_str_len(var_label, field_nchar_max)
       var_position <- which(as.character(x) %in% vars_in_dict[i])
       x[[var_position]] <- enclose(var_label, "[", "]")
     }
@@ -322,7 +336,6 @@ translate_names <- function(x, dict) {
 
   x
 }
-
 
 
 #' Replace REDCap-style tests for missing value with is.na()

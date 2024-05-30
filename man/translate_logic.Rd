@@ -11,6 +11,7 @@ translate_logic(
   use_is_na = TRUE,
   use_in = TRUE,
   drop_redundant = FALSE,
+  field_nchar_max = 80L,
   meta_factors = NULL,
   meta_dictionary = NULL,
   on_error = "warn"
@@ -45,6 +46,10 @@ with \code{\link{\%in\%}}. E.g.:\cr
 removing redundant components from expressions that test both for equality
 and inequality with the same variable. E.g.:\cr
 \code{var == "X" & var != ""} becomes \code{var == "X"}}
+
+\item{field_nchar_max}{Integer indicating the maximum number of characters to
+allow in field name labels before they are truncated and appended with
+"...". Defaults to 80L.}
 
 \item{meta_factors}{A data frame containing variable names (column
 \code{field_name}) and corresponding values (column \code{value}) and labels (column
