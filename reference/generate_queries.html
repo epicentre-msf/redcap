@@ -77,6 +77,7 @@ not missing. Applies to any field with branching logic.</p></li>
 <span>  query_types <span class="op">=</span> <span class="st">"both"</span>,</span>
 <span>  non_required <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  drop_redundant <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  field_nchar_max <span class="op">=</span> <span class="fl">80L</span>,</span>
 <span>  on_error <span class="op">=</span> <span class="st">"warn"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -120,6 +121,12 @@ in queries of type "Field missing". Defaults to <code>FALSE</code>.</p></dd>
 <dd><p>Logical indicating whether to simplify expressions by
 removing redundant components from expressions that test both for equality
 and inequality with the same variable. E.g.:<br><code>var == "X" &amp; var != ""</code> becomes <code>var == "X"</code></p></dd>
+
+
+<dt>field_nchar_max</dt>
+<dd><p>Integer indicating the maximum number of characters to
+allow in field name labels before they are truncated and appended with
+"...". Defaults to 80L.</p></dd>
 
 
 <dt>on_error</dt>

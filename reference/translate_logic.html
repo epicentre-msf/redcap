@@ -75,6 +75,7 @@ Translation stepExample expression
 <span>  use_is_na <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  use_in <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  drop_redundant <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  field_nchar_max <span class="op">=</span> <span class="fl">80L</span>,</span>
 <span>  meta_factors <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  meta_dictionary <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  on_error <span class="op">=</span> <span class="st">"warn"</span></span>
@@ -115,6 +116,12 @@ with <code><a href="https://rdrr.io/r/base/match.html" class="external-link">%in
 <dd><p>Logical indicating whether to simplify expressions by
 removing redundant components from expressions that test both for equality
 and inequality with the same variable. E.g.:<br><code>var == "X" &amp; var != ""</code> becomes <code>var == "X"</code></p></dd>
+
+
+<dt>field_nchar_max</dt>
+<dd><p>Integer indicating the maximum number of characters to
+allow in field name labels before they are truncated and appended with
+"...". Defaults to 80L.</p></dd>
 
 
 <dt>meta_factors</dt>
