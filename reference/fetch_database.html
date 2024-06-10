@@ -66,6 +66,7 @@ frames corresponding to each requested form.</p>
 <span>  id_field <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  rm_empty <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  value_labs <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  value_labs_fetch_raw <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  header_labs <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  checkbox_labs <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  use_factors <span class="op">=</span> <span class="cn">FALSE</span>,</span>
@@ -136,6 +137,15 @@ rows</strong>. Defaults to <code>TRUE</code>.</p></dd>
 <dd><p>Logical indicating whether to return value labels (<code>TRUE</code>)
 or raw values (<code>FALSE</code>) for categorical REDCap variables (radio, dropdown,
 yesno, checkbox). Defaults to <code>TRUE</code> to return labels.</p></dd>
+
+
+<dt>value_labs_fetch_raw</dt>
+<dd><p>Logical indicating whether to request raw values
+for categorical REDCap variables (radio, dropdown, yesno, checkbox), which
+are then transformed to labels in a separate step when <code>value_labs = TRUE</code>.
+Primarily used for troubleshooting issues with the REDCap API returning
+fewer records than expected when given certain combinations of request
+parameters.</p></dd>
 
 
 <dt>header_labs</dt>
