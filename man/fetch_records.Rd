@@ -14,6 +14,7 @@ fetch_records(
   id_field = TRUE,
   rm_empty = TRUE,
   value_labs = TRUE,
+  value_labs_fetch_raw = FALSE,
   header_labs = FALSE,
   checkbox_labs = FALSE,
   use_factors = FALSE,
@@ -71,6 +72,13 @@ rows}. Defaults to \code{TRUE}.}
 \item{value_labs}{Logical indicating whether to return value labels (\code{TRUE})
 or raw values (\code{FALSE}) for categorical REDCap variables (radio, dropdown,
 yesno, checkbox). Defaults to \code{TRUE} to return labels.}
+
+\item{value_labs_fetch_raw}{Logical indicating whether to request raw values
+for categorical REDCap variables (radio, dropdown, yesno, checkbox), which
+are then transformed to labels in a separate step when \code{value_labs = TRUE}.
+Primarily used for troubleshooting issues with the REDCap API returning
+fewer records than expected when given certain combinations of request
+parameters.}
 
 \item{header_labs}{Logical indicating whether to export column names as
 labels (\code{TRUE}) or raw variable names (\code{FALSE}). Defaults to \code{FALSE} to

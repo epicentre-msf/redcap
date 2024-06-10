@@ -57,6 +57,7 @@ fetch_database <- function(conn,
                            id_field = TRUE,
                            rm_empty = TRUE,
                            value_labs = TRUE,
+                           value_labs_fetch_raw = FALSE,
                            header_labs = FALSE,
                            checkbox_labs = FALSE,
                            use_factors = FALSE,
@@ -77,6 +78,7 @@ fetch_database <- function(conn,
 
   ## fetch metadata (dictionary, instruments, repeat instr, event mapping) -----
   m_dict <- meta_dictionary(conn)
+  m_factors <- meta_factors(conn, add_complete = TRUE)
   m_instr <- meta_forms(conn)
   m_events <- meta_events(conn, on_error = "null")
   m_repeat <- suppressWarnings(meta_repeating(conn, on_error = "null"))
@@ -103,6 +105,7 @@ fetch_database <- function(conn,
     id_field = id_field,
     rm_empty = rm_empty,
     value_labs = value_labs,
+    value_labs_fetch_raw = value_labs_fetch_raw,
     header_labs = header_labs,
     checkbox_labs = checkbox_labs,
     use_factors = use_factors,
@@ -119,6 +122,7 @@ fetch_database <- function(conn,
     double_remove = double_remove,
     double_sep = double_sep,
     m_dict = m_dict,
+    m_factors = m_factors,
     m_instr = m_instr,
     m_events = m_events,
     m_repeat = m_repeat,

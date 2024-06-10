@@ -190,8 +190,7 @@ test_valid <- function(arg, arg_name, options) {
   if (length(non_matching) > 0) {
     stop(
       "The following ", arg_name, " were not found: ",
-      paste(non_matching, collapse = "; "),
-      call. = FALSE
+      paste(non_matching, collapse = "; ")
     )
   }
 }

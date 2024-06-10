@@ -36,6 +36,12 @@
 #' @param value_labs Logical indicating whether to return value labels (`TRUE`)
 #'   or raw values (`FALSE`) for categorical REDCap variables (radio, dropdown,
 #'   yesno, checkbox). Defaults to `TRUE` to return labels.
+#' @param value_labs_fetch_raw Logical indicating whether to request raw values
+#'   for categorical REDCap variables (radio, dropdown, yesno, checkbox), which
+#'   are then transformed to labels in a separate step when `value_labs = TRUE`.
+#'   Primarily used for troubleshooting issues with the REDCap API returning
+#'   fewer records than expected when given certain combinations of request
+#'   parameters.
 #' @param header_labs Logical indicating whether to export column names as
 #'   labels (`TRUE`) or raw variable names (`FALSE`). Defaults to `FALSE` to
 #'   return raw variable names.
@@ -144,6 +150,7 @@ fetch_records <- function(conn,
                           id_field = TRUE,
                           rm_empty = TRUE,
                           value_labs = TRUE,
+                          value_labs_fetch_raw = FALSE,
                           header_labs = FALSE,
                           checkbox_labs = FALSE,
                           use_factors = FALSE,
@@ -163,6 +170,7 @@ fetch_records <- function(conn,
 
   ## fetch metadata (dictionary, instruments, repeat instr, event mapping) -----
   m_dict <- meta_dictionary(conn)
+  m_factors <- meta_factors(conn, add_complete = TRUE)
   m_instr <- meta_forms(conn)
   m_events <- meta_events(conn, on_error = "null")
   m_repeat <- suppressWarnings(meta_repeating(conn, on_error = "null"))
@@ -183,6 +191,7 @@ fetch_records <- function(conn,
     id_field = id_field,
     rm_empty = rm_empty,
     value_labs = value_labs,
+    value_labs_fetch_raw = value_labs_fetch_raw,
     header_labs = header_labs,
     checkbox_labs = checkbox_labs,
     use_factors = use_factors,
@@ -199,6 +208,7 @@ fetch_records <- function(conn,
     double_remove = double_remove,
     double_sep = double_sep,
     m_dict = m_dict,
+    m_factors = m_factors,
     m_instr = m_instr,
     m_events = m_events,
     m_repeat = m_repeat,
@@ -222,6 +232,7 @@ fetch_records_ <- function(conn,
                            id_field,
                            rm_empty,
                            value_labs,
+                           value_labs_fetch_raw,
                            header_labs,
                            checkbox_labs,
                            use_factors,
@@ -238,6 +249,7 @@ fetch_records_ <- function(conn,
                            double_remove,
                            double_sep,
                            m_dict,
+                           m_factors,
                            m_instr,
                            m_events,
                            m_repeat,
@@ -246,8 +258,8 @@ fetch_records_ <- function(conn,
 
   ## argument validation -------------------------------------------------------
 
-  if (header_labs & value_labs) {
-    stop("Setting arguments 'header_labs' and 'value_labs' both to TRUE is not currently supported")
+  if (header_labs & value_labs & value_labs_fetch_raw) {
+    stop("Setting arguments 'header_labs', 'value_labs', and `value_labs_fetch_raw` all to TRUE is not currently supported")
   }
 
   # double data entry
@@ -291,7 +303,7 @@ fetch_records_ <- function(conn,
     csvDelimiter = ",",
     forms = paste(forms, collapse = ","),
     events = paste(events, collapse = ","),
-    rawOrLabel = "raw",
+    rawOrLabel = ifelse(value_labs & !value_labs_fetch_raw, "label", "raw"),
     rawOrLabelHeaders = ifelse(header_labs, "label", "raw"),
     exportCheckboxLabel = tolower(checkbox_labs),
     exportDataAccessGroups = tolower(dag),
@@ -344,7 +356,7 @@ fetch_records_ <- function(conn,
   }
 
   ## raw values to labels ------------------------------------------------------
-  if (value_labs) {
+  if (value_labs & value_labs_fetch_raw) {
 
     m_factors_instruments <- m_instr %>%
       transmute(
@@ -367,7 +379,10 @@ fetch_records_ <- function(conn,
         replacement = .data$data_access_group_name
       )
 
-    m_factors_raw <- meta_factors(conn, forms = forms, add_complete = TRUE)
+    # m_factors_raw <- meta_factors(conn, forms = forms, add_complete = TRUE)
+
+    m_factors_raw <- m_factors %>%
+      filter(.data$form_name %in% forms)
 
     if (checkbox_labs) {
 
