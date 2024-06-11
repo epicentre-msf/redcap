@@ -235,10 +235,8 @@ post_wrapper <- function(conn,
   )
 
   if (response$status_code != 200L) {
-    if (response$status_code == 504L) {
+    if (on_error == "fail") {
       httr::stop_for_status(response)
-    } else if (on_error == "fail") {
-      stop(httr::content(response)[[1]], call. = FALSE)
     } else {
       out <- NULL
     }
