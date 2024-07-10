@@ -1,9 +1,8 @@
 pandoc: 3.1.11
-pkgdown: 2.0.9
+pkgdown: 2.1.0
 pkgdown_sha: ~
 articles: {}
-last_built: 2024-06-11T17:31Z
+last_built: 2024-07-10T07:55Z
 urls:
   reference: https://epicentre-msf.github.io/redcap/reference
   article: https://epicentre-msf.github.io/redcap/articles
-
