@@ -249,6 +249,10 @@ post_wrapper <- function(conn,
         progress = FALSE
       )
     )
+
+    if (is.null(out)) {
+      stop("Response from REDCap API has status 200 but is empty")
+    }
   }
 
   out
