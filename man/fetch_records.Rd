@@ -27,6 +27,8 @@ fetch_records(
   fn_datetimes_args = list(orders = c("Ymd HMS", "Ymd HM")),
   na = c("", "NA"),
   dag = TRUE,
+  batch_size = 100L,
+  batch_delay = 0.5,
   double_resolve = FALSE,
   double_remove = FALSE,
   double_sep = "--"
@@ -131,6 +133,13 @@ to \link[readr:read_delim]{readr::read_csv}. Defaults to \code{c("", "NA")}.}
 \item{dag}{Logical indicating whether to export the
 \code{redcap_data_access_group} field (if used in the project). Defaults to
 \code{TRUE}.}
+
+\item{batch_size}{Number of records to fetch per batch. Defaults to \code{100L}.
+Set to \code{Inf} or \code{NA} to fetch all records at once.}
+
+\item{batch_delay}{Delay in seconds between fetching successive batches, to
+give the REDCap server time to respond to other requests. Defaults to
+\code{0.5}.}
 
 \item{double_resolve}{Logical indicating whether to resolve double-entries
 (i.e. records entered in duplicate using REDCap's Double Data Entry

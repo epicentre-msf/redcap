@@ -10,6 +10,9 @@
 #' @param names_fn Function for creating custom list element names given a
 #'   vector of form names. Defaults to an identity function in which case
 #'   element names will correspond exactly to form names.
+#' @param form_delay Delay in seconds between fetching successive forms, to
+#'   give the REDCap server time to respond to other requests. Defaults to
+#'   `0.5`.
 #' @param fns Optional list of one or more functions to apply to each list
 #'   element (i.e. each form). Could be used e.g. to filter out record IDs from
 #'   test entries, create derived variables, etc. Each function should take a
@@ -70,6 +73,9 @@ fetch_database <- function(conn,
                            fn_datetimes_args = list(orders = c("Ymd HMS", "Ymd HM")),
                            na = c("", "NA"),
                            dag = TRUE,
+                           batch_size = 100L,
+                           batch_delay = 0.5,
+                           form_delay = 0.5,
                            double_resolve = FALSE,
                            double_remove = FALSE,
                            double_sep = "--",
@@ -94,41 +100,49 @@ fetch_database <- function(conn,
   ## fetch records -------------------------------------------------------------
   # uses lower-level fn fetch_records_() to avoid having to repeatedly fetch the
   # same metadata tables for each separate form
-  out <- lapply(
-    X = forms,
-    FUN = fetch_records_,
-    conn = conn,
-    events = NULL,
-    records = records,
-    records_omit = records_omit,
-    fields = NULL,
-    id_field = id_field,
-    rm_empty = rm_empty,
-    value_labs = value_labs,
-    value_labs_fetch_raw = value_labs_fetch_raw,
-    header_labs = header_labs,
-    checkbox_labs = checkbox_labs,
-    use_factors = use_factors,
-    times_chron = times_chron,
-    date_range_begin = date_range_begin,
-    date_range_end = date_range_end,
-    fn_dates = fn_dates,
-    fn_dates_args = fn_dates_args,
-    fn_datetimes = fn_datetimes,
-    fn_datetimes_args = fn_datetimes_args,
-    na = na,
-    dag = dag,
-    double_resolve = double_resolve,
-    double_remove = double_remove,
-    double_sep = double_sep,
-    m_dict = m_dict,
-    m_factors = m_factors,
-    m_instr = m_instr,
-    m_events = m_events,
-    m_repeat = m_repeat,
-    m_mapping = m_mapping,
-    m_dags = m_dags
-  )
+  out <- list()
+
+  for (i in seq_along(forms)) {
+
+    out[[i]] <- fetch_records_(
+      conn = conn,
+      forms = forms[i],
+      events = NULL,
+      records = records,
+      records_omit = records_omit,
+      fields = NULL,
+      id_field = id_field,
+      rm_empty = rm_empty,
+      value_labs = value_labs,
+      value_labs_fetch_raw = value_labs_fetch_raw,
+      header_labs = header_labs,
+      checkbox_labs = checkbox_labs,
+      use_factors = use_factors,
+      times_chron = times_chron,
+      date_range_begin = date_range_begin,
+      date_range_end = date_range_end,
+      fn_dates = fn_dates,
+      fn_dates_args = fn_dates_args,
+      fn_datetimes = fn_datetimes,
+      fn_datetimes_args = fn_datetimes_args,
+      na = na,
+      dag = dag,
+      batch_size = batch_size,
+      batch_delay = batch_delay,
+      double_resolve = double_resolve,
+      double_remove = double_remove,
+      double_sep = double_sep,
+      m_dict = m_dict,
+      m_factors = m_factors,
+      m_instr = m_instr,
+      m_events = m_events,
+      m_repeat = m_repeat,
+      m_mapping = m_mapping,
+      m_dags = m_dags
+    )
+
+    if (i < length(forms)) Sys.sleep(form_delay)
+  }
 
   names(out) <- names_fn(forms)
 

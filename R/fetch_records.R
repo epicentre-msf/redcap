@@ -82,6 +82,11 @@
 #' @param dag Logical indicating whether to export the
 #'   `redcap_data_access_group` field (if used in the project). Defaults to
 #'   `TRUE`.
+#' @param batch_size Number of records to fetch per batch. Defaults to `100L`.
+#'   Set to `Inf` or `NA` to fetch all records at once.
+#' @param batch_delay Delay in seconds between fetching successive batches, to
+#'   give the REDCap server time to respond to other requests. Defaults to
+#'   `0.5`.
 #' @param double_resolve Logical indicating whether to resolve double-entries
 #'   (i.e. records entered in duplicate using REDCap's Double Data Entry
 #'   module), by filtering to the lowest entry number associated with each
@@ -163,6 +168,8 @@ fetch_records <- function(conn,
                           fn_datetimes_args = list(orders = c("Ymd HMS", "Ymd HM")),
                           na = c("", "NA"),
                           dag = TRUE,
+                          batch_size = 100L,
+                          batch_delay = 0.5,
                           double_resolve = FALSE,
                           double_remove = FALSE,
                           double_sep = "--") {
@@ -204,6 +211,8 @@ fetch_records <- function(conn,
     fn_datetimes_args = fn_datetimes_args,
     na = na,
     dag = dag,
+    batch_size = batch_size,
+    batch_delay = batch_delay,
     double_resolve = double_resolve,
     double_remove = double_remove,
     double_sep = double_sep,
@@ -245,6 +254,8 @@ fetch_records_ <- function(conn,
                            fn_datetimes_args,
                            na,
                            dag,
+                           batch_size,
+                           batch_delay,
                            double_resolve,
                            double_remove,
                            double_sep,
@@ -290,12 +301,44 @@ fetch_records_ <- function(conn,
     stop("Argument 'date_range_end' must have format YYYY-MM-DD HH:MM:SS")
   }
 
+  # batch_size
+  if (is.na(batch_size)) {
+    batch_size <- Inf
+  }
+
   # add ID field
   name_id_field <- m_dict$field_name[1]
   if (id_field & !name_id_field %in% fields) fields <- c(name_id_field, fields)
 
-  ## prepare request -----------------------------------------------------------
-  body <- list(
+
+  ## get list of record IDs to create batches ----------------------------------
+  body_ids <- list(
+    token = conn$token,
+    content = "record",
+    format = "csv",
+    type = "flat",
+    csvDelimiter = ",",
+    fields = name_id_field,
+    events = paste(events, collapse = ","),
+    returnFormat = "csv"
+  )
+
+  if (!is.null(records)) body_ids[["records"]] <- paste(records, collapse = ",")
+
+  df_ids <- post_wrapper(
+    conn,
+    body = body_ids,
+    content = NULL,
+    na = na,
+    on_error = "fail"
+  )
+
+  ids_unique <- sort(unique(df_ids[[name_id_field]]))
+  batch <- (seq_len(length(ids_unique)) - 1L) %/% batch_size + 1L
+
+
+  ## fetch records in batches --------------------------------------------------
+  body_batch <- list(
     token = conn$token,
     content = "record",
     format = "csv",
@@ -310,23 +353,31 @@ fetch_records_ <- function(conn,
     returnFormat = "csv"
   )
 
-  # add records and fields, if given
-  if (!is.null(records)) body[["records"]] <- paste(records, collapse = ",")
-  if (!is.null(fields)) body[["fields"]] <- paste(fields, collapse = ",")
+  # add fields, if given
+  if (!is.null(fields)) body_batch[["fields"]] <- paste(fields, collapse = ",")
 
   # add date range fields, if given
-  if (!is.null(date_range_begin)) body[["dateRangeBegin"]] <- date_range_begin
-  if (!is.null(date_range_end))   body[["dateRangeEnd"]]   <- date_range_end
+  if (!is.null(date_range_begin)) body_batch[["dateRangeBegin"]] <- date_range_begin
+  if (!is.null(date_range_end))   body_batch[["dateRangeEnd"]]   <- date_range_end
 
+  out_batch <- list()
 
-  ## fetch ---------------------------------------------------------------------
-  out <- post_wrapper(
-    conn,
-    body = body,
-    content = NULL,
-    na = na,
-    on_error = "fail"
-  )
+  for (i in unique(batch)) {
+
+    body_batch$records = paste(ids_unique[batch == i], collapse = ",")
+
+    out_batch[[i]] <- post_wrapper(
+      conn,
+      body = body_batch,
+      content = NULL,
+      na = na,
+      on_error = "fail"
+    )
+
+    if (i < max(batch)) Sys.sleep(batch_delay)
+  }
+
+  out <- bind_rows(out_batch)
 
 
   ## if no records, populate empty form ----------------------------------------
