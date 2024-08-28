@@ -1,3 +1,7 @@
+# redcap 0.2.0
+
+* records are fetched in batches by default with `fetch_records()`
+  
 # redcap 0.1.0.9000
 
 * `project_logging()` now returns column `timestamp` as class POSIXct by
