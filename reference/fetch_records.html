@@ -11,7 +11,7 @@ more REDCap instruments.'></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">redcap</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -68,6 +68,8 @@ more REDCap instruments.</p>
 <span>  fn_datetimes_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>orders <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Ymd HMS"</span>, <span class="st">"Ymd HM"</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  na <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">""</span>, <span class="st">"NA"</span><span class="op">)</span>,</span>
 <span>  dag <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  batch_size <span class="op">=</span> <span class="fl">100L</span>,</span>
+<span>  batch_delay <span class="op">=</span> <span class="fl">0.5</span>,</span>
 <span>  double_resolve <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  double_remove <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  double_sep <span class="op">=</span> <span class="st">"--"</span></span>
@@ -218,6 +220,17 @@ to <a href="https://readr.tidyverse.org/reference/read_delim.html" class="extern
 <dd><p>Logical indicating whether to export the
 <code>redcap_data_access_group</code> field (if used in the project). Defaults to
 <code>TRUE</code>.</p></dd>
+
+
+<dt id="arg-batch-size">batch_size<a class="anchor" aria-label="anchor" href="#arg-batch-size"></a></dt>
+<dd><p>Number of records to fetch per batch. Defaults to <code>100L</code>.
+Set to <code>Inf</code> or <code>NA</code> to fetch all records at once.</p></dd>
+
+
+<dt id="arg-batch-delay">batch_delay<a class="anchor" aria-label="anchor" href="#arg-batch-delay"></a></dt>
+<dd><p>Delay in seconds between fetching successive batches, to
+give the REDCap server time to respond to other requests. Defaults to
+<code>0.5</code>.</p></dd>
 
 
 <dt id="arg-double-resolve">double_resolve<a class="anchor" aria-label="anchor" href="#arg-double-resolve"></a></dt>
