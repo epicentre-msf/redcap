@@ -7,6 +7,8 @@
 #' @param dict A metadata dictionary
 #'
 #' @importFrom lubridate parse_date_time
+#' @importFrom dplyr add_count
+#' @importFrom rlang .data
 #' @export reclass
 reclass <- function(x,
                     dict,
@@ -18,7 +20,6 @@ reclass <- function(x,
                     fn_dates_args = list(orders = c("Ymd", "dmY")),
                     fn_datetimes = lubridate::parse_date_time,
                     fn_datetimes_args = list(orders = c("Ymd HMS", "Ymd HM"))) {
-
 
   fn_dates <- match.fun(fn_dates)
   fn_datetimes <- match.fun(fn_datetimes)
@@ -66,8 +67,24 @@ reclass <- function(x,
 
   # factors
   if (use_factors) {
+
     types <- c("radio", "yesno", "dropdown", "checkbox")
     df_factors <- prep_meta_factors(dict, types)
+
+    # check for fields with duplicated labels
+    df_factors_count <- dplyr::add_count(df_factors, .data$field_name, .data$label)
+    fields_label_dup_summary <- df_factors_count[df_factors_count$n > 1, c("field_name", "value", "label")]
+
+    if (nrow(fields_label_dup_summary) > 0) {
+      warning(
+        "The following fields have duplicated labels within the REDCap ",
+        "dictionary, and so are excluded from coercion to type factor\n\n",
+        print_and_capture(fields_label_dup_summary)
+      )
+
+      df_factors <- df_factors[!df_factors$field_name %in% fields_label_dup_summary$field_name,]
+    }
+
     col_level <- ifelse(value_labs, "label", "value")
     cols_factor <- intersect(names(x), df_factors[[col_field]])
     x <- cols_factorize(x, cols_factor, df_factors, col_field, col_level)
