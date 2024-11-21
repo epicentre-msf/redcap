@@ -204,8 +204,8 @@ valid_datetime_arg <- function(x) {
 
 
 #' @noRd
-#' @importFrom httr POST content stop_for_status
-#' @importFrom readr cols col_character
+#' @importFrom httr POST content stop_for_status http_status
+#' @importFrom readr read_csv cols col_character
 post_wrapper <- function(conn,
                          body = NULL,
                          content = NULL,
@@ -234,24 +234,39 @@ post_wrapper <- function(conn,
     encode = "form"
   )
 
-  if (response$status_code != 200L) {
-    if (on_error == "fail") {
-      httr::stop_for_status(response)
-    } else {
-      out <- NULL
-    }
-  } else {
-    suppressWarnings(
-      out <- httr::content(
-        response,
+  response_raw <- httr::content(
+    x = response,
+    as = "text",
+    encoding = "UTF-8",
+    type = "text/csv"
+  )
+
+  response_message <- httr::http_status(response)[["message"]]
+  is_success <- response$status_code == 200L
+
+  if (is_success) {
+
+    out <- try(
+      readr::read_csv(
+        file = I(response_raw),
         col_types = readr::cols(.default = readr::col_character()),
         na = na,
         progress = FALSE
-      )
+      ),
+      silent = TRUE
     )
 
-    if (is.null(out)) {
-      stop("Response from REDCap API has status 200 but is empty")
+    if ("try-error" %in% class(out) | !inherits(out, "data.frame")) {
+      is_success <- FALSE
+      response_message <- paste("API request had status 200 but no data returned\nRaw text:", response_raw)
+    }
+  }
+
+  if (!is_success) {
+    if (on_error == "fail") {
+      stop(response_message)
+    } else {
+      out <- NULL
     }
   }
 
