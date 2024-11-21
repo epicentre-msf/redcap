@@ -33,6 +33,11 @@
 #' @param rm_empty Logical indicating whether to remove rows for which all
 #'   fields from the relevant form(s) are missing. See section __Removing empty
 #'   rows__. Defaults to `TRUE`.
+#' @param rm_empty_omit_calc Logical indicating whether to exclude calculated
+#'   fields from assessment of empty rows. Defaults to FALSE. In some cases
+#'   calculated fields can be autopopulated for certain records even when the
+#'   relevant form is truly empty, which would otherwise lead to "empty" forms
+#'   being returned even when `rm_empty` is `TRUE`. Defaults to `FALSE`.
 #' @param value_labs Logical indicating whether to return value labels (`TRUE`)
 #'   or raw values (`FALSE`) for categorical REDCap variables (radio, dropdown,
 #'   yesno, checkbox). Defaults to `TRUE` to return labels.
@@ -154,6 +159,7 @@ fetch_records <- function(conn,
                           fields = NULL,
                           id_field = TRUE,
                           rm_empty = TRUE,
+                          rm_empty_omit_calc = FALSE,
                           value_labs = TRUE,
                           value_labs_fetch_raw = FALSE,
                           header_labs = FALSE,
@@ -197,6 +203,7 @@ fetch_records <- function(conn,
     fields = fields,
     id_field = id_field,
     rm_empty = rm_empty,
+    rm_empty_omit_calc,
     value_labs = value_labs,
     value_labs_fetch_raw = value_labs_fetch_raw,
     header_labs = header_labs,
@@ -240,6 +247,7 @@ fetch_records_ <- function(conn,
                            fields,
                            id_field,
                            rm_empty,
+                           rm_empty_omit_calc,
                            value_labs,
                            value_labs_fetch_raw,
                            header_labs,
@@ -546,7 +554,8 @@ fetch_records_ <- function(conn,
       forms = forms,
       value_labs = value_labs,
       header_labs = header_labs,
-      checkbox_labs = checkbox_labs
+      checkbox_labs = checkbox_labs,
+      rm_empty_omit_calc = rm_empty_omit_calc
     )
 
     out <- out[!rows_missing, , drop = FALSE]
@@ -602,12 +611,14 @@ all_fields_missing <- function(x,
                                value_labs,
                                header_labs,
                                checkbox_labs,
+                               rm_empty_omit_calc,
                                drop_first_row = TRUE) {
 
   col_field <- ifelse(header_labs, "field_label", "field_name")
 
   if (drop_first_row) dict <- dict[-1, , drop = FALSE]
   dict_form <- dict[dict$form_name %in% forms, , drop = FALSE]
+  if (rm_empty_omit_calc) dict_form <- dict_form[!dict_form$field_type %in% "calc", , drop = FALSE]
 
   # if value_labs = TRUE
   #  - checkbox_labs = TRUE, empty checkbox fields will be <NA>

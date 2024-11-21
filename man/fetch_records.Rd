@@ -13,6 +13,7 @@ fetch_records(
   fields = NULL,
   id_field = TRUE,
   rm_empty = TRUE,
+  rm_empty_omit_calc = FALSE,
   value_labs = TRUE,
   value_labs_fetch_raw = FALSE,
   header_labs = FALSE,
@@ -70,6 +71,12 @@ request the record ID field.}
 \item{rm_empty}{Logical indicating whether to remove rows for which all
 fields from the relevant form(s) are missing. See section \strong{Removing empty
 rows}. Defaults to \code{TRUE}.}
+
+\item{rm_empty_omit_calc}{Logical indicating whether to exclude calculated
+fields from assessment of empty rows. Defaults to FALSE. In some cases
+calculated fields can be autopopulated for certain records even when the
+relevant form is truly empty, which would otherwise lead to "empty" forms
+being returned even when \code{rm_empty} is \code{TRUE}. Defaults to \code{FALSE}.}
 
 \item{value_labs}{Logical indicating whether to return value labels (\code{TRUE})
 or raw values (\code{FALSE}) for categorical REDCap variables (radio, dropdown,
