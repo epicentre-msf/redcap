@@ -95,11 +95,6 @@ meta_dictionary <- function(conn,
 
   if (!is.null(out)) {
 
-    # temp debugging check
-    if (!"select_choices_or_calculations" %in% names(out)) {
-      stop(deparse(out))
-    }
-
     ## shorten names
     out <- dplyr::rename(
       out,

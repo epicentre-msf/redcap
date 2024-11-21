@@ -387,8 +387,6 @@ fetch_records_ <- function(conn,
     # and try again, and print class of non-df object
     if (!"data.frame" %in% class(out_batch[[i]])) {
 
-      warning(class(out_batch[[i]]))
-
       Sys.sleep(batch_delay * 3)
 
       out_batch[[i]] <- post_wrapper(
