@@ -616,7 +616,11 @@ all_fields_missing <- function(x,
 
   if (drop_first_row) dict <- dict[-1, , drop = FALSE]
   dict_form <- dict[dict$form_name %in% forms, , drop = FALSE]
-  if (rm_empty_omit_calc) dict_form <- dict_form[!dict_form$field_type %in% "calc", , drop = FALSE]
+
+  if (rm_empty_omit_calc) {
+    is_field_calc <- dict_form$field_type %in% "calc" | grepl("\\@CALC", dict_form$field_annotation)
+    dict_form <- dict_form[!is_field_calc, , drop = FALSE]
+  }
 
   # if value_labs = TRUE
   #  - checkbox_labs = TRUE, empty checkbox fields will be <NA>
