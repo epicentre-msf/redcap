@@ -52,8 +52,11 @@ reclass <- function(x,
 
   # time variables
   cols_time <- dict_foc[[col_field]][grepl("^time$", dict_foc$validation)]
-  x <- cols_reclass(x, cols_time, parse_redcap_time)
-  if (!times_chron) x <- cols_reclass(x, cols_time, prep_redcap_time)
+  if (times_chron) {
+    x <- cols_reclass(x, cols_time, parse_redcap_time)
+  } else {
+    x <- cols_reclass(x, cols_time, prep_redcap_time)
+  }
 
   # repeat instrument column to character
   cols_instrument <- ifelse(header_labs, "Repeat Instrument", "redcap_repeat_instrument")
