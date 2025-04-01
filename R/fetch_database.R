@@ -51,6 +51,7 @@
 #' )
 #' }
 #'
+#' @importFrom dplyr tibble
 #' @export fetch_database
 fetch_database <- function(conn,
                            forms = NULL,
@@ -97,7 +98,7 @@ fetch_database <- function(conn,
       stop("Unable to fetch data access groups, try setting `dag = FALSE`")
     }
   } else {
-    m_dags <- tibble::tibble(
+    m_dags <- dplyr::tibble(
       data_access_group_name = character(0),
       unique_group_name = character(0),
       data_access_group_id = character(0),
