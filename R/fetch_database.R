@@ -90,7 +90,19 @@ fetch_database <- function(conn,
   m_events <- meta_events(conn, on_error = "null")
   m_repeat <- suppressWarnings(meta_repeating(conn, on_error = "null"))
   m_mapping <- meta_mapping(conn, on_error = "null")
-  m_dags <- project_dags(conn)
+
+  if (dag) {
+    m_dags <- try(project_dags(conn), silent = TRUE)
+    if ("try-error" %in% class(m_dags)) {
+      stop("Unable to fetch data access groups, try setting `dag = FALSE`")
+    }
+  } else {
+    m_dags <- tibble::tibble(
+      data_access_group_name = character(0),
+      unique_group_name = character(0),
+      data_access_group_id = character(0),
+    )
+  }
 
   ## validate arguments --------------------------------------------------------
   names_fn <- match.fun(names_fn)

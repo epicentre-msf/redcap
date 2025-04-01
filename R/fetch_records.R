@@ -180,6 +180,62 @@ fetch_records <- function(conn,
                           double_remove = FALSE,
                           double_sep = "--") {
 
+  if (F) {
+
+    conn_pb <- rconn(
+      url = Sys.getenv("REDCAP_API_URL"),
+      token = Sys.getenv("REDCAP_PKG")
+    )
+
+    conn_paul <- rconn(
+      url = Sys.getenv("REDCAP_API_URL"),
+      token = Sys.getenv("REDCAP_PKG_PAUL")
+    )
+
+
+
+    meta_forms(conn_pb)
+    meta_forms(conn_paul)
+
+    project_dags(conn_pb)
+    project_dags(conn_paul)
+
+    fetch_records(conn_pb, forms = "enrolment")
+    fetch_records(conn_paul, forms = "enrolment", dag = F)
+
+    fetch_database(conn_pb, dag = F)
+    fetch_database(conn_paul, dag = F)
+
+    conn = conn_paul
+    forms = "enrolment"
+    events = NULL
+    records = NULL
+    records_omit = NULL
+    fields = NULL
+    id_field = TRUE
+    rm_empty = TRUE
+    rm_empty_omit_calc = FALSE
+    value_labs = TRUE
+    value_labs_fetch_raw = FALSE
+    header_labs = FALSE
+    checkbox_labs = FALSE
+    use_factors = FALSE
+    times_chron = TRUE
+    date_range_begin = NULL
+    date_range_end = NULL
+    fn_dates = parse_date
+    fn_dates_args = list(orders = c("Ymd", "dmY"))
+    fn_datetimes = lubridate::parse_date_time
+    fn_datetimes_args = list(orders = c("Ymd HMS", "Ymd HM"))
+    na = c("", "NA")
+    dag = TRUE
+    batch_size = 100L
+    batch_delay = 0.5
+    double_resolve = FALSE
+    double_remove = FALSE
+    double_sep = "--"
+  }
+
 
   ## fetch metadata (dictionary, instruments, repeat instr, event mapping) -----
   m_dict <- meta_dictionary(conn)
@@ -188,7 +244,20 @@ fetch_records <- function(conn,
   m_events <- meta_events(conn, on_error = "null")
   m_repeat <- suppressWarnings(meta_repeating(conn, on_error = "null"))
   m_mapping <- meta_mapping(conn, on_error = "null")
-  m_dags <- project_dags(conn)
+
+  if (dag) {
+    m_dags <- try(project_dags(conn), silent = TRUE)
+    if ("try-error" %in% class(m_dags)) {
+      stop("Unable to fetch data access groups, try setting `dag = FALSE`")
+    }
+  } else {
+    m_dags <- tibble::tibble(
+      data_access_group_name = character(0),
+      unique_group_name = character(0),
+      data_access_group_id = character(0),
+    )
+  }
+
 
   ## fetch records -------------------------------------------------------------
   # the use of the lower-level fn fetch_records_ is to enable vectorization over
