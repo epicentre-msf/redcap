@@ -2,7 +2,7 @@
 #' logic specified in the project codebook
 #'
 #' @description
-#' Generates two types of data validation queries using the project codebook
+#' Generates data validation queries using the project codebook
 #' (see [`meta_dictionary`]) and [`translate_logic`]:
 #'
 #' 1. __Field missing__: Branching logic evaluates to `TRUE` (if specified), but
@@ -11,6 +11,10 @@
 #'
 #' 2. __Field not missing__: Branching logic evaluates to `FALSE` but field is
 #' not missing. Applies to any field with branching logic.
+#'
+#' 3. __Field out of range__: Field has a non-missing value that falls outside
+#' the `validation_min` / `validation_max` bounds defined in the project
+#' dictionary. Opt-in via `range_queries = TRUE`.
 #'
 #' @inheritParams fetch_records
 #' @inheritParams translate_logic
@@ -29,6 +33,10 @@
 #'   "both".
 #' @param non_required Logical indicating whether to include non-required fields
 #'   in queries of type "Field missing". Defaults to `FALSE`.
+#' @param range_queries Logical indicating whether to generate "Out of range"
+#'   queries for fields with `validation_min` / `validation_max` bounds defined
+#'   in the project dictionary. Applies to numeric and date validation types.
+#'   Defaults to `FALSE`.
 #'
 #' @return
 #' A [`tibble`][tibble::tbl_df]-style data frame specifying queries, with the
@@ -39,7 +47,8 @@
 #'   \item{field_name}{Field name (from REDCap dictionary, see [`meta_dictionary`])}
 #'   \item{form_name}{Form name (from REDCap dictionary)}
 #'   \item{required}{Is it a required field in REDCap dictionary ("y" or `<NA>`) ?}
-#'   \item{description}{Description of query (e.g. "Missing: \[Signed consent forms?\]")}
+#'   \item{description}{Description of query (e.g. "Missing: \[Signed consent forms?\]",
+#'   "Not missing: \[...\]", or "Out of range: \[...\]")}
 #'   \item{suggestion}{Suggestion for query resolution. A human-readable
 #'   translation of query expression (e.g. If \[Is the participant 18 years or
 #'   older?\] is "Yes", item \[Signed consent forms?\] should not be missing)}
@@ -51,20 +60,22 @@
 #'   arrange all_of bind_rows group_by ungroup summarize across case_when add_row
 #' @importFrom rlang .data .env
 #' @export generate_queries
-generate_queries <- function(conn,
-                             forms = NULL,
-                             dict = meta_dictionary(
-                               conn,
-                               forms = forms,
-                               expand_checkbox = FALSE
-                             ),
-                             lang = "en",
-                             query_types = "both",
-                             non_required = FALSE,
-                             drop_redundant = FALSE,
-                             field_nchar_max = 80L,
-                             on_error = "warn") {
-
+generate_queries <- function(
+  conn,
+  forms = NULL,
+  dict = meta_dictionary(
+    conn,
+    forms = forms,
+    expand_checkbox = FALSE
+  ),
+  lang = "en",
+  query_types = "both",
+  non_required = FALSE,
+  drop_redundant = FALSE,
+  range_queries = FALSE,
+  field_nchar_max = 80L,
+  on_error = "warn"
+) {
   ## validate argument lang
   lang <- match.arg(lang, c("en", "fr"))
 
@@ -180,7 +191,8 @@ generate_queries <- function(conn,
       ),
     ) %>%
     group_by(
-      .data$field_name, .data$field_type
+      .data$field_name,
+      .data$field_type
     ) %>%
     summarize(
       var_missing = paste(.data$var_missing, collapse = " & "),
@@ -251,9 +263,21 @@ generate_queries <- function(conn,
     " ne devrait \U00EAtre renseign\U00E9 que si ",
     " should only be filled if "
   )
+  lab_range_pre <- ifelse(lang == "fr", "Hors limites: ", "Out of range: ")
+  lab_range_between <- ifelse(lang == "fr", " doit \U00EAtre compris entre ", " must be between ")
+  lab_range_and <- ifelse(lang == "fr", " et ", " and ")
+  lab_range_below <- ifelse(
+    lang == "fr",
+    " doit \U00EAtre sup\U00E9rieur ou \U00E9gal \U00E0 ",
+    " must be greater than or equal to "
+  )
+  lab_range_above <- ifelse(
+    lang == "fr",
+    " doit \U00EAtre inf\U00E9rieur ou \U00E9gal \U00E0 ",
+    " must be less than or equal to "
+  )
 
   if (query_types %in% c("missing", "both")) {
-
     if (non_required) {
       req_fields <- c("y", NA_character_)
     } else {
@@ -270,16 +294,22 @@ generate_queries <- function(conn,
           TRUE ~ paste(.data$logic_base, .data$var_missing, sep = " & ")
         ),
         description = paste0(
-          .env$lab_missing_pre, enclose(.data$field_label, l = "[", r = "]")
+          .env$lab_missing_pre,
+          enclose(.data$field_label, l = "[", r = "]")
         ),
         suggestion = if_else(
           is.na(.data$branching_logic),
           paste0(
-            .env$lab_item, enclose(.data$field_label, l = "[", r = "]"), .env$lab_missing_suf
+            .env$lab_item,
+            enclose(.data$field_label, l = "[", r = "]"),
+            .env$lab_missing_suf
           ),
           paste0(
-            .env$lab_if, .data$logic_base_text, .env$lab_item_middle,
-            enclose(.data$field_label, l = "[", r = "]"), .env$lab_missing_suf
+            .env$lab_if,
+            .data$logic_base_text,
+            .env$lab_item_middle,
+            enclose(.data$field_label, l = "[", r = "]"),
+            .env$lab_missing_suf
           )
         )
       )
@@ -312,8 +342,125 @@ generate_queries <- function(conn,
     q_not_missing <- NULL
   }
 
+  ## queries for var out of range
+  if (isTRUE(range_queries)) {
+    numeric_validations <- c(
+      "integer",
+      "number",
+      "number_1dp",
+      "number_2dp",
+      "number_3dp",
+      "number_4dp"
+    )
+    date_validations <- c(
+      "date_dmy",
+      "date_mdy",
+      "date_ymd",
+      "datetime_dmy",
+      "datetime_mdy",
+      "datetime_ymd",
+      "datetime_seconds_dmy",
+      "datetime_seconds_mdy",
+      "datetime_seconds_ymd"
+    )
+    range_validations <- c(numeric_validations, date_validations)
+
+    rows_range <- dict$form_name %in%
+      forms &
+      dict$field_type %in% "text" &
+      dict$validation %in% range_validations &
+      (!is.na(dict$validation_min) | !is.na(dict$validation_max))
+
+    q_range <- dict[
+      rows_range,
+      c(
+        "field_name",
+        "form_name",
+        "field_type",
+        "field_label",
+        "branching_logic",
+        "required_field",
+        "validation",
+        "validation_min",
+        "validation_max"
+      )
+    ] %>%
+      left_join(
+        q_full %>% select("field_name", "rownumber"),
+        by = "field_name"
+      ) %>%
+      mutate(
+        field_expr = case_when(
+          .data$validation %in% .env$numeric_validations ~ paste0("as.numeric(", .data$field_name, ")"),
+          .data$validation %in% .env$date_validations ~ paste0("as.Date(", .data$field_name, ")")
+        ),
+        bound_min = case_when(
+          .data$validation %in% .env$date_validations ~ prep_date_bound(.data$validation_min),
+          .data$validation %in% .env$numeric_validations ~ prep_numeric_bound(.data$validation_min),
+          TRUE ~ .data$validation_min
+        ),
+        bound_max = case_when(
+          .data$validation %in% .env$date_validations ~ prep_date_bound(.data$validation_max),
+          .data$validation %in% .env$numeric_validations ~ prep_numeric_bound(.data$validation_max),
+          TRUE ~ .data$validation_max
+        ),
+        query = case_when(
+          !is.na(.data$validation_min) & !is.na(.data$validation_max) ~
+            paste0(
+              "!is.na(",
+              .data$field_name,
+              ") & (",
+              .data$field_expr,
+              " < ",
+              .data$bound_min,
+              " | ",
+              .data$field_expr,
+              " > ",
+              .data$bound_max,
+              ")"
+            ),
+          !is.na(.data$validation_min) ~
+            paste0("!is.na(", .data$field_name, ") & ", .data$field_expr, " < ", .data$bound_min),
+          !is.na(.data$validation_max) ~
+            paste0("!is.na(", .data$field_name, ") & ", .data$field_expr, " > ", .data$bound_max)
+        ),
+        query_type = "Out of range",
+        description = paste0(
+          .env$lab_range_pre,
+          enclose(.data$field_label, l = "[", r = "]")
+        ),
+        suggestion = case_when(
+          !is.na(.data$validation_min) & !is.na(.data$validation_max) ~
+            paste0(
+              .env$lab_item,
+              enclose(.data$field_label, l = "[", r = "]"),
+              .env$lab_range_between,
+              .data$validation_min,
+              .env$lab_range_and,
+              .data$validation_max
+            ),
+          !is.na(.data$validation_min) ~
+            paste0(
+              .env$lab_item,
+              enclose(.data$field_label, l = "[", r = "]"),
+              .env$lab_range_below,
+              .data$validation_min
+            ),
+          !is.na(.data$validation_max) ~
+            paste0(
+              .env$lab_item,
+              enclose(.data$field_label, l = "[", r = "]"),
+              .env$lab_range_above,
+              .data$validation_max
+            )
+        )
+      )
+  } else {
+    q_range <- NULL
+  }
+
   ## combine and return
-  bind_rows(q_missing, q_not_missing) %>%
+  bind_rows(q_missing, q_not_missing, q_range) %>%
     rename("required" = "required_field") %>%
     arrange(.data$rownumber, .data$query_type) %>%
     group_by(.data$form_name) %>%
@@ -337,10 +484,42 @@ generate_queries <- function(conn,
 }
 
 
+#' @noRd
+prep_numeric_bound <- function(x) {
+  out <- x # literals stay as-is
+  is_ref <- !is.na(x) & grepl("\\[", x)
+  if (any(is_ref)) {
+    tmp <- gsub("\\[\\w+\\](?=\\[)", "", x[is_ref], perl = TRUE) # strip event prefix
+    tmp <- gsub("([[]|[]])", "", tmp) # strip brackets
+    out[is_ref] <- paste0("as.numeric(", tmp, ")")
+  }
+  out
+}
+
+
+#' @noRd
+prep_date_bound <- function(x) {
+  out <- rep(NA_character_, length(x))
+  is_na <- is.na(x)
+  is_today <- !is_na & grepl("^today$", x, ignore.case = TRUE)
+  is_ref <- !is_na & !is_today & grepl("\\[", x)
+  is_lit <- !is_na & !is_today & !is_ref
+
+  out[is_today] <- "Sys.Date()"
+
+  if (any(is_ref)) {
+    tmp <- gsub("\\[\\w+\\](?=\\[)", "", x[is_ref], perl = TRUE) # strip event prefix
+    tmp <- gsub("([[]|[]])", "", tmp) # strip brackets
+    out[is_ref] <- paste0("as.Date(", tmp, ")")
+  }
+
+  out[is_lit] <- paste0("as.Date(\"", x[is_lit], "\")")
+  out
+}
+
 
 #' @noRd
 translate_human <- function(x, lang = "en") {
-
   lang <- match.arg(lang, c("en", "fr"))
 
   x <- gsub("\"\\[", "[", x)

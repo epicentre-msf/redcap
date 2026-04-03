@@ -13,6 +13,7 @@ generate_queries(
   query_types = "both",
   non_required = FALSE,
   drop_redundant = FALSE,
+  range_queries = FALSE,
   field_nchar_max = 80L,
   on_error = "warn"
 )
@@ -44,6 +45,11 @@ removing redundant components from expressions that test both for equality
 and inequality with the same variable. E.g.:\cr
 \code{var == "X" & var != ""} becomes \code{var == "X"}}
 
+\item{range_queries}{Logical indicating whether to generate "Out of range"
+queries for fields with \code{validation_min} / \code{validation_max} bounds defined
+in the project dictionary. Applies to numeric and date validation types.
+Defaults to \code{FALSE}.}
+
 \item{field_nchar_max}{Integer indicating the maximum number of characters to
 allow in field name labels before they are truncated and appended with
 "...". Defaults to 80L.}
@@ -62,7 +68,8 @@ following 7 columns:
 \item{field_name}{Field name (from REDCap dictionary, see \code{\link{meta_dictionary}})}
 \item{form_name}{Form name (from REDCap dictionary)}
 \item{required}{Is it a required field in REDCap dictionary ("y" or \verb{<NA>}) ?}
-\item{description}{Description of query (e.g. "Missing: [Signed consent forms?]")}
+\item{description}{Description of query (e.g. "Missing: [Signed consent forms?]",
+"Not missing: [...]", or "Out of range: [...]")}
 \item{suggestion}{Suggestion for query resolution. A human-readable
 translation of query expression (e.g. If [Is the participant 18 years or
 older?] is "Yes", item [Signed consent forms?] should not be missing)}
@@ -71,12 +78,15 @@ older?] is "Yes", item [Signed consent forms?] should not be missing)}
 }
 }
 \description{
-Generates two types of data validation queries using the project codebook
+Generates data validation queries using the project codebook
 (see \code{\link{meta_dictionary}}) and \code{\link{translate_logic}}:
 \enumerate{
 \item \strong{Field missing}: Branching logic evaluates to \code{TRUE} (if specified), but
 field is missing. By default only applies to required fields (\code{required_field == "y"}) (can modify with argument \code{non_required}).
 \item \strong{Field not missing}: Branching logic evaluates to \code{FALSE} but field is
 not missing. Applies to any field with branching logic.
+\item \strong{Field out of range}: Field has a non-missing value that falls outside
+the \code{validation_min} / \code{validation_max} bounds defined in the project
+dictionary. Opt-in via \code{range_queries = TRUE}.
 }
 }
