@@ -38,7 +38,7 @@ missingness with \code{\link{is.na}}. E.g.:\cr
 
 \item{use_in}{Logical indicating whether to replace instances of \code{\link{==}} and
 \code{\link{!=}} associated with factor-type variables (as defined in \code{meta_factors})
-with \code{\link{\%in\%}}. E.g.:\cr
+with \code{\link[base:match]{base::\%in\%}}. E.g.:\cr
 \code{y == 'Yes'} becomes \code{y \%in\% 'Yes'}\cr
 \code{y != 'Yes'} becomes \code{!y \%in\% 'Yes'}}
 

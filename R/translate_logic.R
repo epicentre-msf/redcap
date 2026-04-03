@@ -27,7 +27,7 @@
 #'   `y != ""` becomes `!is.na(y)`
 #' @param use_in Logical indicating whether to replace instances of [`==`] and
 #'   [`!=`] associated with factor-type variables (as defined in `meta_factors`)
-#'   with [`%in%`]. E.g.:\cr
+#'   with [`base::%in%`]. E.g.:\cr
 #'   `y == 'Yes'` becomes `y %in% 'Yes'`\cr
 #'   `y != 'Yes'` becomes `!y %in% 'Yes'`
 #' @param drop_redundant Logical indicating whether to simplify expressions by
@@ -66,17 +66,18 @@
 #' translate_logic(redcap_logic, meta_factors = df_factors)
 #'
 #' @export translate_logic
-translate_logic <- function(x,
-                            use_value_labs = TRUE,
-                            use_header_labs = FALSE,
-                            use_is_na = TRUE,
-                            use_in = TRUE,
-                            drop_redundant = FALSE,
-                            field_nchar_max = 80L,
-                            meta_factors = NULL,
-                            meta_dictionary = NULL,
-                            on_error = "warn") {
-
+translate_logic <- function(
+  x,
+  use_value_labs = TRUE,
+  use_header_labs = FALSE,
+  use_is_na = TRUE,
+  use_in = TRUE,
+  drop_redundant = FALSE,
+  field_nchar_max = 80L,
+  meta_factors = NULL,
+  meta_dictionary = NULL,
+  on_error = "warn"
+) {
   # validate args
   on_error <- match.arg(on_error, c("ignore", "warn", "fail"))
 
@@ -130,22 +131,21 @@ translate_logic <- function(x,
 #' Non-vectorized version of translate_logic
 #'
 #' @noRd
-translate_logic_ <- function(x,
-                             use_value_labs,
-                             use_header_labs,
-                             use_is_na,
-                             use_in,
-                             drop_redundant,
-                             field_nchar_max,
-                             meta_factors,
-                             meta_dictionary) {
-
-
+translate_logic_ <- function(
+  x,
+  use_value_labs,
+  use_header_labs,
+  use_is_na,
+  use_in,
+  drop_redundant,
+  field_nchar_max,
+  meta_factors,
+  meta_dictionary
+) {
   if (!is.na(x)) {
     x_prep <- try(translate_prep(x), silent = TRUE)
 
     if (!"try-error" %in% class(x_prep)) {
-
       if (drop_redundant) {
         x_prep <- drop_redundant_traverse(x_prep)
       }
@@ -162,7 +162,6 @@ translate_logic_ <- function(x,
       )
 
       x_out <- deparse1(x_out)
-
     } else {
       x_out <- NA_character_
     }
@@ -198,7 +197,6 @@ translate_prep <- function(x) {
 
 #' @noRd
 drop_redundant_traverse <- function(x) {
-
   if (is_expr_lowest_drop(x)) {
     x <- drop_redundant(x)
   } else {
@@ -220,27 +218,40 @@ drop_redundant_traverse <- function(x) {
 #' translate_options(), translate_missing(), and translate_equals()
 #'
 #' @noRd
-translate_traverse <- function(x,
-                               use_value_labs,
-                               use_header_labs,
-                               use_is_na,
-                               use_in,
-                               field_nchar_max,
-                               meta_factors,
-                               meta_dictionary) {
-
+translate_traverse <- function(
+  x,
+  use_value_labs,
+  use_header_labs,
+  use_is_na,
+  use_in,
+  field_nchar_max,
+  meta_factors,
+  meta_dictionary
+) {
   if (is_expr_lowest(x)) {
-    if (use_value_labs)  x <- translate_options(x, meta_factors)
-    if (use_in)          x <- translate_equals(x, meta_factors$field_name, use_is_na)
-    if (use_header_labs) x <- translate_names(x, meta_dictionary, field_nchar_max)
-    if (use_is_na)       x <- translate_missing(x)
+    if (use_value_labs) {
+      x <- translate_options(x, meta_factors)
+    }
+    if (use_in) {
+      x <- translate_equals(x, meta_factors$field_name, use_is_na)
+    }
+    if (use_header_labs) {
+      x <- translate_names(x, meta_dictionary, field_nchar_max)
+    }
+    if (use_is_na) x <- translate_missing(x)
   } else {
     for (i in seq_len(length(x))) {
       if (is_expr_lowest(x[[i]])) {
-        if (use_value_labs)  x[[i]] <- translate_options(x[[i]], meta_factors)
-        if (use_in)          x[[i]] <- translate_equals(x[[i]], meta_factors$field_name, use_is_na)
-        if (use_header_labs) x[[i]] <- translate_names(x[[i]], meta_dictionary, field_nchar_max)
-        if (use_is_na)       x[[i]] <- translate_missing(x[[i]])
+        if (use_value_labs) {
+          x[[i]] <- translate_options(x[[i]], meta_factors)
+        }
+        if (use_in) {
+          x[[i]] <- translate_equals(x[[i]], meta_factors$field_name, use_is_na)
+        }
+        if (use_header_labs) {
+          x[[i]] <- translate_names(x[[i]], meta_dictionary, field_nchar_max)
+        }
+        if (use_is_na) x[[i]] <- translate_missing(x[[i]])
       } else {
         x[[i]] <- translate_traverse(
           x[[i]],
@@ -275,13 +286,11 @@ translate_traverse <- function(x,
 #'
 #' @noRd
 translate_options <- function(x, meta_factors) {
-
   # check if has factor-type var
   var_factor <- intersect(all.vars(x), meta_factors$field_name)
   has_factor <- length(var_factor) == 1L
 
   if (has_factor) {
-
     vals_factor <- meta_factors$value[meta_factors$field_name %in% var_factor]
     labs_factor <- meta_factors$label[meta_factors$field_name %in% var_factor]
 
@@ -300,7 +309,6 @@ translate_options <- function(x, meta_factors) {
 }
 
 
-
 #' Swap variable names (e.g. 'ahead_household') with labels (e.g. 'Are you the
 #' head of the household ?')
 #'
@@ -309,9 +317,9 @@ translate_options <- function(x, meta_factors) {
 #' and replaces variable names with labels.
 #'
 #' E.g.:
-#' - ahead_household == "Yes"
+#' - ahead_household == \"Yes\"
 #' becomes...
-#' - "[Are you the head of the household ?]" == "Yes"
+#' - \[Are you the head of the household ?\] == \"Yes\"
 #'
 #' @param x A call returned by str2lang()
 #' @param dict The metadata dictionary (see [`meta_dictionary`])
@@ -321,14 +329,14 @@ translate_options <- function(x, meta_factors) {
 #'
 #' @noRd
 translate_names <- function(x, dict, field_nchar_max) {
-
   vars_in_dict <- intersect(all.vars(x), dict$field_name)
 
   if (length(vars_in_dict) > 0) {
-
     for (i in seq_along(vars_in_dict)) {
       var_label <- dict$field_label[dict$field_name %in% vars_in_dict[i]]
-      if (nchar(var_label) > field_nchar_max) var_label <- cutoff_str_len(var_label, field_nchar_max)
+      if (nchar(var_label) > field_nchar_max) {
+        var_label <- cutoff_str_len(var_label, field_nchar_max)
+      }
       var_position <- which(as.character(x) %in% vars_in_dict[i])
       x[[var_position]] <- enclose(var_label, "[", "]")
     }
@@ -348,7 +356,6 @@ translate_names <- function(x, dict, field_nchar_max) {
 #'
 #' @noRd
 translate_missing <- function(x) {
-
   # Search expression for:
   # - a variable
   # - a REDCap-style missing value ("")
@@ -361,13 +368,14 @@ translate_missing <- function(x) {
   # If expression has the three required components, translate to is.na()
   if (any(is_var) & any(is_missing) & (any(is_equal) | any(is_not_equal))) {
     x <- paste0("is.na(", x[[which(is_var)]], ")")
-    if (any(is_not_equal)) x <- paste0("!", x)
+    if (any(is_not_equal)) {
+      x <- paste0("!", x)
+    }
     x <- str2lang(x)
   }
 
   x
 }
-
 
 
 #' Replace == with %in%
@@ -380,7 +388,6 @@ translate_missing <- function(x) {
 #'
 #' @noRd
 translate_equals <- function(x, vars_factor, use_is_na) {
-
   # Search expression for:
   # - a factor-type variable
   # - an equal or not-equal sign ("==" | "!=")
@@ -393,7 +400,6 @@ translate_equals <- function(x, vars_factor, use_is_na) {
 
   # If expression has the required components, translate
   if (!skip_missing & has_factor & (any(is_equal) | any(is_not_equal))) {
-
     x[[which(is_equal | is_not_equal)]] <- as.symbol("%in%")
     if (any(is_not_equal)) x <- str2lang(paste0("!", deparse(x)))
   }
@@ -402,30 +408,26 @@ translate_equals <- function(x, vars_factor, use_is_na) {
 }
 
 
-
 #' Test whether an expression is binary (has at most 3 atomic terms)
 #'
 #' @param x A call returned by str2lang()
 #'
 #' @noRd
 is_expr_lowest <- function(x) {
-   all(lengths(as.list(x)) == 1L) & length(x) <= 3L
+  all(lengths(as.list(x)) == 1L) & length(x) <= 3L
 }
-
 
 
 #' @noRd
 drop_redundant <- function(x) {
-
   x_vec <- as.character(x)
   x_list <- as.list(x)
 
-  has_and <-  x_vec[1] == "&"
+  has_and <- x_vec[1] == "&"
   is_equal <- vapply(x_list, any_equal, FALSE)
   is_not_missing <- vapply(x_list, any_not_missing, FALSE)
 
   if (has_and & any(is_equal) & any(is_not_missing)) {
-
     i_equal <- which(is_equal)
     i_not_missing <- which(is_not_missing)
 
@@ -450,7 +452,8 @@ is_expr_lowest_drop <- function(x) {
 #' @importFrom utils getParseData
 n_operators <- function(x) {
   x_deparse <- deparse1(x)
-  n <- if (nchar(x_deparse) == 1) { # bit of a hack
+  n <- if (nchar(x_deparse) == 1) {
+    # bit of a hack
     0
   } else {
     sum(getParseData(parse(text = x_deparse))$token %in% c("OR", "AND"))
@@ -469,4 +472,3 @@ any_equal <- function(x) {
 any_not_missing <- function(x) {
   any(as.character(x) %in% "") & any(as.character(x) %in% "!=")
 }
-
