@@ -2,4 +2,5 @@
 .Rhistory
 .DS_store
 data-raw/
-docs
+dev/
+docs/
