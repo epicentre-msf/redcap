@@ -60,7 +60,7 @@ translate_logic(
   [`==`](https://rdrr.io/r/base/Comparison.html) and
   [`!=`](https://rdrr.io/r/base/Comparison.html) associated with
   factor-type variables (as defined in `meta_factors`) with
-  [`%in%`](https://rdrr.io/r/base/match.html). E.g.:  
+  [`base::%in%`](https://rdrr.io/r/base/match.html). E.g.:  
   `y == 'Yes'` becomes `y %in% 'Yes'`  
   `y != 'Yes'` becomes `!y %in% 'Yes'`
 
