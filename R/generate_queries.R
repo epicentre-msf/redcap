@@ -51,21 +51,20 @@
 #'   arrange all_of bind_rows group_by ungroup summarize across case_when add_row
 #' @importFrom rlang .data .env
 #' @export generate_queries
-generate_queries <- function(
-  conn,
-  forms = NULL,
-  dict = meta_dictionary(
-    conn,
-    forms = forms,
-    expand_checkbox = FALSE
-  ),
-  lang = "en",
-  query_types = "both",
-  non_required = FALSE,
-  drop_redundant = FALSE,
-  field_nchar_max = 80L,
-  on_error = "warn"
-) {
+generate_queries <- function(conn,
+                             forms = NULL,
+                             dict = meta_dictionary(
+                               conn,
+                               forms = forms,
+                               expand_checkbox = FALSE
+                             ),
+                             lang = "en",
+                             query_types = "both",
+                             non_required = FALSE,
+                             drop_redundant = FALSE,
+                             field_nchar_max = 80L,
+                             on_error = "warn") {
+
   ## validate argument lang
   lang <- match.arg(lang, c("en", "fr"))
 
@@ -81,25 +80,18 @@ generate_queries <- function(
   ## validate argument query_types
   query_types <- match.arg(query_types, c("missing", "not missing", "both"))
 
-  ## fetch metadata events for longitudinal studies
-  if (project_info(conn)$is_longitudinal == "1") {
-    m_events <- meta_events(conn)
+  ## fetch metadata events
+  m_events <- meta_events(conn)
 
-    event_choices <- paste(
-      m_events$unique_event_name,
-      m_events$event_name,
-      sep = ", ",
-      collapse = " | "
-    )
-  } else {
-    event_choices <- NULL
-  }
+  event_choices <- paste(
+    m_events$unique_event_name,
+    m_events$event_name,
+    sep = ", ",
+    collapse = " | "
+  )
 
   ## fetch metadata dictionary
-  dict$field_label <- cutoff_str_len(
-    string_squish(dict$field_label),
-    field_nchar_max
-  )
+  dict$field_label <- cutoff_str_len(string_squish(dict$field_label), field_nchar_max)
 
   dict_check <- expand_checkbox(dict) %>%
     add_row(
@@ -188,8 +180,7 @@ generate_queries <- function(
       ),
     ) %>%
     group_by(
-      .data$field_name,
-      .data$field_type
+      .data$field_name, .data$field_type
     ) %>%
     summarize(
       var_missing = paste(.data$var_missing, collapse = " & "),
@@ -262,6 +253,7 @@ generate_queries <- function(
   )
 
   if (query_types %in% c("missing", "both")) {
+
     if (non_required) {
       req_fields <- c("y", NA_character_)
     } else {
@@ -273,28 +265,21 @@ generate_queries <- function(
       mutate(
         query_type = "Missing",
         query = case_when(
-          !is.na(.data$branching_logic) &
-            is.na(.data$logic_base) ~ NA_character_,
+          !is.na(.data$branching_logic) & is.na(.data$logic_base) ~ NA_character_,
           is.na(.data$logic_base) ~ .data$var_missing,
           TRUE ~ paste(.data$logic_base, .data$var_missing, sep = " & ")
         ),
         description = paste0(
-          .env$lab_missing_pre,
-          enclose(.data$field_label, l = "[", r = "]")
+          .env$lab_missing_pre, enclose(.data$field_label, l = "[", r = "]")
         ),
         suggestion = if_else(
           is.na(.data$branching_logic),
           paste0(
-            .env$lab_item,
-            enclose(.data$field_label, l = "[", r = "]"),
-            .env$lab_missing_suf
+            .env$lab_item, enclose(.data$field_label, l = "[", r = "]"), .env$lab_missing_suf
           ),
           paste0(
-            .env$lab_if,
-            .data$logic_base_text,
-            .env$lab_item_middle,
-            enclose(.data$field_label, l = "[", r = "]"),
-            .env$lab_missing_suf
+            .env$lab_if, .data$logic_base_text, .env$lab_item_middle,
+            enclose(.data$field_label, l = "[", r = "]"), .env$lab_missing_suf
           )
         )
       )
@@ -308,16 +293,8 @@ generate_queries <- function(
       filter(!is.na(.data$branching_logic)) %>%
       mutate(
         query_type = "Not missing",
-        query = paste0(
-          "!",
-          wrap_parens(.data$logic_base),
-          " & ",
-          .data$var_not_missing
-        ),
-        description = paste0(
-          .env$lab_not_missing_pre,
-          enclose(.data$field_label, l = "[", r = "]")
-        ),
+        query = paste0("!", wrap_parens(.data$logic_base), " & ", .data$var_not_missing),
+        description = paste0(.env$lab_not_missing_pre, enclose(.data$field_label, l = "[", r = "]")),
         suggestion = paste0(
           .env$lab_item,
           enclose(.data$field_label, l = "[", r = "]"),
@@ -360,8 +337,10 @@ generate_queries <- function(
 }
 
 
+
 #' @noRd
 translate_human <- function(x, lang = "en") {
+
   lang <- match.arg(lang, c("en", "fr"))
 
   x <- gsub("\"\\[", "[", x)
