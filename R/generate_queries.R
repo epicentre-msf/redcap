@@ -91,15 +91,19 @@ generate_queries <- function(
   ## validate argument query_types
   query_types <- match.arg(query_types, c("missing", "not missing", "both"))
 
-  ## fetch metadata events
-  m_events <- meta_events(conn)
+  ## fetch metadata events for longitudinal studies
+  if (project_info(conn)$is_longitudinal == "1") {
+    m_events <- meta_events(conn)
 
-  event_choices <- paste(
-    m_events$unique_event_name,
-    m_events$event_name,
-    sep = ", ",
-    collapse = " | "
-  )
+    event_choices <- paste(
+      m_events$unique_event_name,
+      m_events$event_name,
+      sep = ", ",
+      collapse = " | "
+    )
+  } else {
+    event_choices <- NULL
+  }
 
   ## fetch metadata dictionary
   dict$field_label <- cutoff_str_len(string_squish(dict$field_label), field_nchar_max)
